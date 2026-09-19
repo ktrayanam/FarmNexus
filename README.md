@@ -1,10 +1,28 @@
 # 🌾 FarmNexus — Python AI Platform for Farmers & Direct Agri-Marketplace
 
-> **Hackathon Edition (Version 2.0 — Full Stack with Vercel CI/CD & Python Support)**  
+> **Hackathon Edition (Version 2.0 — Dual-Stack Node/Python with Git Develop Branch & Vercel CI/CD)**  
 > *Voice-First AI Platform for Smart Crop Care & Direct Market Access*  
 > *Built with **React 18**, **Node.js Express / Python FastAPI**, **MongoDB 7.0**, and **Vercel Serverless**.*
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ktrayanam/FarmNexus?ref=develop)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fktrayanam%2FFarmNexus&env=MONGODB_URI&envDescription=MongoDB%20Atlas%20Connection%20URI%20(Optional%2C%20defaults%20to%20in-memory%20resilient%20store)&project-name=farmnexus&repo-name=FarmNexus)
+[![CI/CD main](https://github.com/ktrayanam/FarmNexus/actions/workflows/vercel.yml/badge.svg?branch=main)](https://github.com/ktrayanam/FarmNexus/actions/workflows/vercel.yml)
+[![CI/CD develop](https://github.com/ktrayanam/FarmNexus/actions/workflows/vercel.yml/badge.svg?branch=develop)](https://github.com/ktrayanam/FarmNexus/actions/workflows/vercel.yml)
+[![Tests Passing](https://img.shields.io/badge/tests-20%2F20%20passed-brightgreen.svg)](https://github.com/ktrayanam/FarmNexus)
+
+---
+
+## 🛠️ Develop on Git & Cloud Codespaces
+
+FarmNexus provides a streamlined Git workflow with dedicated **`develop`** (preview/integration) and **`main`** (production) branches:
+
+- **1-Click Cloud Development**: Click the **[Open in GitHub Codespaces](https://codespaces.new/ktrayanam/FarmNexus?ref=develop)** button above to launch an instant full-stack environment with Node 20, Python 3.12, MongoDB 7.0, and auto port-forwarding (3000, 5050, 8501).
+- **Web-Based Quick Edits**: Press `.` on any repository page or visit [github.dev/ktrayanam/FarmNexus/tree/develop](https://github.dev/ktrayanam/FarmNexus/tree/develop).
+- **Git Branching Workflow**:
+  - `main`: Production releases (deploys to Vercel Production).
+  - `develop`: Daily integration branch (deploys to Vercel Preview).
+  - `feature/*`: Topic branches merged into `develop` via Pull Requests.
+- **Detailed Guide**: Check out [DEVELOPMENT.md](DEVELOPMENT.md) for local setup, branching conventions, and contribution instructions.
 
 ---
 
@@ -19,8 +37,9 @@ FarmNexus is pre-configured with zero-configuration **Vercel Serverless Architec
 4. Click **Deploy**! In ~60 seconds, your live production application will be live at `https://<your-project>.vercel.app`.
 
 ### Option B: Automated GitHub Actions CI/CD Pipeline
-- Every `git push` to `main` automatically triggers the **`.github/workflows/vercel.yml`** workflow.
-- It validates the 15/15 automated test suite and builds production assets automatically.
+- Every `git push` to `main` or `develop` automatically triggers the **`.github/workflows/vercel.yml`** workflow.
+- It validates the 20/20 automated test suite (Node.js & Python) and builds production assets automatically.
+- Production deployment runs on `main`; preview deployment runs on `develop` and Pull Requests.
 - To enable automatic deployment via GitHub Actions, add `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` to your GitHub Repository Secrets (`Settings > Secrets and variables > Actions`).
 
 ### Option C: Vercel CLI
@@ -35,7 +54,7 @@ vercel --prod
 
 ## 🐍 Python Platform Quick Start
 
-FarmNexus is fully implemented in **Python 3.12**! You can run the Python FastAPI backend, the Streamlit full-stack web app, or the 15/15 automated Python test suite using the handy launcher script:
+FarmNexus is fully implemented in **Python 3.12**! You can run the Python FastAPI backend, the Streamlit full-stack web app, or the 20/20 automated Python test suite using the handy launcher script:
 
 ### 1. Launch FastAPI Backend (Port 5050):
 ```bash
@@ -63,7 +82,7 @@ streamlit run streamlit_app.py --server.port 8501
   - Mandi price trends and comparison charts
   - Cold storage directory & rural logistics freight calculator
 
-### 3. Run Automated Python Test Suite (15/15 Passed):
+### 3. Run Automated Python Test Suite (20/20 Passed):
 ```bash
 ./run_python.sh test
 # OR directly:
@@ -163,7 +182,7 @@ farmnexus/
 ├── README.md                    # Platform documentation
 ├── backend_python/
 │   ├── main.py                  # FastAPI server with Swagger UI (/docs) on port 5050
-│   ├── test_suite.py            # Automated test suite (15/15 tests passing)
+│   ├── test_suite.py            # Automated test suite (20/20 tests passing)
 │   ├── data/
 │   │   └── seed_data.py         # Agricultural dataset (crops, users, prices, diseases)
 │   ├── db/

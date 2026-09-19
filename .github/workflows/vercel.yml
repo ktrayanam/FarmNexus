@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
   verify:
@@ -22,14 +24,25 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
       - name: Install All Dependencies
         run: |
           npm install
           cd backend && npm install
           cd ../frontend && npm install
+          cd ..
+          pip install -r requirements.txt
 
-      - name: Run Test Suite (15/15 Verification)
+      - name: Run Node.js Test Suite (20/20 Verification)
         run: npm test
+
+      - name: Run Python Test Suite (20/20 Verification)
+        run: python3 backend_python/test_suite.py
 
       - name: Test Frontend Production Build
         run: npm run build

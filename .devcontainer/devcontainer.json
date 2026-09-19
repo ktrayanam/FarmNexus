@@ -1,0 +1,46 @@
+{
+  "name": "FarmNexus Cloud Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    }
+  },
+  "forwardPorts": [3000, 5050, 8501, 27017],
+  "portsAttributes": {
+    "3000": {
+      "label": "FarmNexus React Frontend (Vite)",
+      "onAutoForward": "openPreview"
+    },
+    "5050": {
+      "label": "FarmNexus Backend API (Node Express / Python FastAPI)",
+      "onAutoForward": "silent"
+    },
+    "8501": {
+      "label": "FarmNexus Streamlit Python App",
+      "onAutoForward": "silent"
+    },
+    "27017": {
+      "label": "MongoDB Community Server",
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "mongodb.mongodb-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "postCreateCommand": "npm install && cd backend && npm install && cd ../frontend && npm install && cd .. && pip install -r requirements.txt",
+  "remoteUser": "node"
+}

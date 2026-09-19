@@ -33,17 +33,21 @@ from backend_python.main import app
 
 
 def create_client():
-    # Attempt connecting to live running server on port 5050 first; fallback to in-memory TestClient
+    # Attempt connecting to live running server on port 5050 only if it's the Python server; fallback to in-memory TestClient
     live_url = "http://127.0.0.1:5050/api"
     try:
         r = requests.get(f"{live_url}/health", timeout=0.5)
-        if r.status_code == 200:
+        if r.status_code == 200 and "Python" in r.text:
             print("🌐 Connected to live FarmNexus Python FastAPI server at http://127.0.0.1:5050")
             class LiveClient:
                 def get(self, path, **kwargs):
                     return requests.get(f"http://127.0.0.1:5050{path}", **kwargs)
                 def post(self, path, **kwargs):
                     return requests.post(f"http://127.0.0.1:5050{path}", **kwargs)
+                def patch(self, path, **kwargs):
+                    return requests.patch(f"http://127.0.0.1:5050{path}", **kwargs)
+                def delete(self, path, **kwargs):
+                    return requests.delete(f"http://127.0.0.1:5050{path}", **kwargs)
             return LiveClient()
     except Exception:
         pass
@@ -55,7 +59,7 @@ def run_tests():
     print("🌾 Starting FarmNexus Python Comprehensive Verification Test Suite...\n")
     client = create_client()
     passed_count = 0
-    total_count = 15
+    total_count = 20
 
     # 1. Health check
     print("1. Testing System Health & Telemetry...")
@@ -236,6 +240,89 @@ def run_tests():
     print("   ✅ Offline sync batch processed and idempotency verified (duplicate prevented)!")
     passed_count += 1
 
+    # 16. FR-17: FPO Pooling Lot creation, farmer contribution & tender acceptance
+    print("16. Testing FR-17: FPO Pooling Lot creation, farmer contribution & tender acceptance...")
+    new_fpo = client.post("/api/fpo/aggregations", json={
+        "crop": "Paddy",
+        "aggregatedQuantity": 5000.0,
+        "unit": "kg",
+        "targetPrice": 28.0,
+        "fpoName": "Krishna Delta Farmer Producer Co."
+    }).json()
+    assert new_fpo["success"] is True
+    fpo_id = new_fpo["lot"]["id"]
+
+    contrib = client.post(f"/api/fpo/aggregations/{fpo_id}/contribute", json={
+        "farmerName": "Ramesh Patel",
+        "quantity": 500.0,
+        "unit": "kg"
+    }).json()
+    assert contrib["success"] is True
+    assert contrib["lot"]["aggregatedQuantity"] == 5500.0
+
+    tender = client.post(f"/api/fpo/aggregations/{fpo_id}/tender", json={
+        "buyer": "ITC Agri Sourcing",
+        "status": "CONFIRMED",
+        "counterRate": 28.5
+    }).json()
+    assert tender["success"] is True
+    print("   ✅ FPO Bulk pool created, member contribution recorded, and corporate tender confirmed!")
+    passed_count += 1
+
+    # 17. Cold Storage Reservations History & Cancel
+    print("17. Testing Cold Storage Bookings History & Cancellation...")
+    all_bookings = client.get("/api/storage/bookings").json()
+    assert all_bookings["success"] is True
+    assert len(all_bookings["bookings"]) > 0
+
+    cancel_res = client.delete(f"/api/storage/bookings/{book_res['booking']['bookingId']}").json()
+    assert cancel_res["success"] is True
+    assert cancel_res["booking"]["status"] == "CANCELLED"
+    print(f"   ✅ Cold storage reservation {book_res['booking']['bookingId']} cancelled successfully!")
+    passed_count += 1
+
+    # 18. Logistics Vehicle Trip Booking & Status Update
+    print("18. Testing Logistics Vehicle Booking & Live Status Dispatch...")
+    trip = client.post("/api/logistics/book", json={
+        "vehicleId": "veh-01",
+        "distanceKm": 20.0,
+        "pickupLocation": "Guntur Farm Shed",
+        "destinationLocation": "Vijayawada Hub",
+        "totalFreight": 650.0
+    }).json()
+    assert trip["success"] is True
+    booking_ref = trip["trip"]["bookingRef"]
+
+    patch_trip = client.patch(f"/api/logistics/trips/{booking_ref}", json={"status": "COMPLETED"}).json()
+    assert patch_trip["success"] is True
+    assert patch_trip["trip"]["status"] == "COMPLETED"
+    print(f"   ✅ Logistics vehicle booked ({booking_ref}) and marked COMPLETED!")
+    passed_count += 1
+
+    # 19. APMC Mandi Price Calibration
+    print("19. Testing APMC Mandi Price Calibration & Update...")
+    cal_res = client.post("/api/market/prices", json={
+        "market": "Bowenpally APMC, Hyderabad",
+        "crop": "Tomato",
+        "modalPrice": 2600.0,
+        "trend": "up"
+    }).json()
+    assert cal_res["success"] is True
+    assert cal_res["priceItem"]["modalPrice"] == 2600.0
+    print("   ✅ Bowenpally Tomato APMC price calibrated to ₹2600/quintal!")
+    passed_count += 1
+
+    # 20. Buyer Offer Submission
+    print("20. Testing Buyer Offer Submission & Validation...")
+    offer_res = client.post(f"/api/marketplace/listings/{listing_id}/offer", json={
+        "buyerName": "Kisan Wholesale Trader",
+        "buyerPhone": "+919848012345",
+        "offeredPrice": 1880.0,
+        "offeredQuantity": 50.0
+    }).json()
+    assert offer_res["success"] is True
+    print(f"   ✅ Marketplace buyer offer submitted and validated for listing {listing_id}!")
+    passed_count += 1
 
     print(f"\n🎉 ALL {passed_count}/{total_count} AUTOMATED PYTHON TESTS PASSED SUCCESSFULLY! 💯")
     return True
