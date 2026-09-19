@@ -105,6 +105,15 @@ export async function apiSubmitOffer(listingId, offer) {
   return res.json();
 }
 
+export async function apiAcceptMarketplaceRequest(listingId, dealData) {
+  const res = await fetch(`${API_BASE}/marketplace/listings/${listingId}/accept`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dealData || {})
+  });
+  return res.json();
+}
+
 export async function fetchFPOAggregations() {
   const res = await fetch(`${API_BASE}/fpo/aggregations`);
   return res.json();

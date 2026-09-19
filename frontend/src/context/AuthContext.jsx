@@ -12,7 +12,7 @@ const ROLE_PERMISSIONS = {
     defaultTab: "marketplace"
   },
   fpo: {
-    allowedTabs: ["fpo", "produce", "mandi-prices", "cold-storage"],
+    allowedTabs: ["fpo", "produce", "mandi-prices", "marketplace", "cold-storage"],
     defaultTab: "fpo"
   },
   admin: {
@@ -34,14 +34,13 @@ const DEFAULT_USERS = {
   },
   buyer: {
     id: "buyer-01",
-    name: "Vikram Singhal (Kisan Fresh)",
+    name: "Priya Sharma (Direct Consumer / Buyer)",
     role: "buyer",
     phone: "+91 98480 12345",
-    location: "Bowenpally Agri Yard, Hyderabad",
-    companyName: "Kisan Fresh Wholesale Supermarkets",
-    mandiLicenseId: "APMC-HYD-W-2024-889",
-    buyerType: "Wholesale Supermarket Sourcing",
-    avatar: "🏢"
+    location: "Kavuri Hills, Hyderabad",
+    companyName: "Direct Consumer / Farm-to-Fork Buyer",
+    buyerType: "Direct Consumer",
+    avatar: "🛒"
   },
   fpo: {
     id: "fpo-01",

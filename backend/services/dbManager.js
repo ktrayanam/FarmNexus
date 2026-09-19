@@ -425,6 +425,59 @@ export function submitBuyerOffer(listingId, offerData) {
   return { success: true, listing, offer };
 }
 
+export function acceptMarketplaceRequest(listingId, dealData = {}) {
+  const db = getDb();
+  const listing = db.marketplaceListings.find(l => l.id === listingId);
+  if (!listing) {
+    throw new Error("Listing not found.");
+  }
+
+  const finalPrice = parseFloat(dealData.agreedPrice || dealData.acceptedPrice) || listing.askingPrice;
+  const finalQty = parseFloat(dealData.agreedQuantity || dealData.acceptedQuantity) || listing.quantity;
+  const totalAmount = Math.round(finalPrice * finalQty);
+
+  listing.status = "ACCEPTED";
+  listing.acceptedDeal = {
+    dealId: "DEAL-" + Date.now().toString().slice(-6),
+    buyerName: dealData.buyerName || "Direct Consumer",
+    buyerPhone: dealData.buyerPhone || "+91 98480 12345",
+    buyerAddress: dealData.buyerAddress || "Local Consumer Pickup / Home Delivery",
+    buyerRole: dealData.buyerRole || "Direct Consumer",
+    agreedPrice: finalPrice,
+    agreedQuantity: finalQty,
+    unit: listing.unit,
+    totalAmount,
+    acceptedAt: new Date().toISOString(),
+    status: "CONFIRMED_ORDER"
+  };
+
+  saveDb();
+  persistListing(listing);
+
+  // Automatically record sale transaction in Farmer's stock ledger
+  try {
+    const tx = {
+      id: "tx-deal-" + Date.now(),
+      type: "STOCK_OUT",
+      crop: listing.crop,
+      quantity: finalQty,
+      unit: listing.unit,
+      unitPrice: finalPrice,
+      date: new Date().toISOString(),
+      source: `Direct Market Sale to ${listing.acceptedDeal.buyerName}`,
+      recordedVia: "DIRECT_CONSUMER_ACCEPT",
+      notes: `Order ${listing.acceptedDeal.dealId} confirmed! Total ₹${totalAmount.toLocaleString()}`
+    };
+    db.transactions.unshift(tx);
+    saveDb();
+    persistTransaction(tx);
+  } catch (e) {
+    console.warn("Deal tx record notice:", e.message);
+  }
+
+  return { success: true, listing, deal: listing.acceptedDeal };
+}
+
 // 6. FPO Aggregations
 export function getFpoAggregations() {
   const db = getDb();

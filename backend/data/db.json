@@ -21,7 +21,7 @@
       "id": "inv-01",
       "crop": "Tomato",
       "variety": "Hybrid US 440",
-      "quantity": 405,
+      "quantity": 460,
       "unit": "kg",
       "unitPrice": 20,
       "harvestDate": "2026-09-15",
@@ -66,7 +66,7 @@
       "id": "inv-04",
       "crop": "Paddy",
       "variety": "BPT 5204 (Sona Masoori)",
-      "quantity": 80,
+      "quantity": 30,
       "unit": "bags",
       "unitPrice": 1850,
       "harvestDate": "2026-09-12",
@@ -101,11 +101,87 @@
       "quantity": 10,
       "unit": "kg",
       "unitPrice": 20,
-      "date": "2026-09-19T10:10:13.006Z",
+      "date": "2026-09-19T12:16:06.542Z",
       "source": "Farmer Harvest / Inward Entry",
       "recordedVia": "OFFLINE_SYNC",
       "notes": " [Synced Offline]",
       "syncToken": "token-abc-123"
+    },
+    {
+      "id": "tx-adj-1789820166524",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T12:16:06.524Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789820166520-sqez",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T12:16:06.520Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "tx-deal-1789820154753",
+      "type": "STOCK_OUT",
+      "crop": "Tomato",
+      "quantity": 250,
+      "unit": "kg",
+      "unitPrice": 24,
+      "date": "2026-09-19T12:15:54.753Z",
+      "source": "Direct Market Sale to Priya Sharma (Direct Consumer)",
+      "recordedVia": "DIRECT_CONSUMER_ACCEPT",
+      "notes": "Order DEAL-154752 confirmed! Total ₹6,000"
+    },
+    {
+      "id": "tx-1789812928288-3yv3",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 25,
+      "unit": "bags",
+      "unitPrice": 1850,
+      "date": "2026-09-19T10:15:28.288Z",
+      "source": "Direct Sale / Outward Transfer",
+      "recordedVia": "VOICE",
+      "notes": "Quick Stock Out: -25 bags Paddy",
+      "createdAt": "2026-09-19T10:15:28.290Z"
+    },
+    {
+      "id": "tx-1789812918125-fit0",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 25,
+      "unit": "bags",
+      "unitPrice": 1850,
+      "date": "2026-09-19T10:15:18.125Z",
+      "source": "Direct Sale / Outward Transfer",
+      "recordedVia": "VOICE",
+      "notes": "Quick Stock Out: -25 bags Paddy",
+      "createdAt": "2026-09-19T10:15:18.127Z"
+    },
+    {
+      "id": "tx-1789812613006-7sr9",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T10:10:13.006Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]",
+      "createdAt": "2026-09-19T10:10:13.007Z"
     },
     {
       "id": "tx-adj-1789812612991",
@@ -118,7 +194,8 @@
       "source": "Manual Stock Audit",
       "recordedVia": "MANUAL",
       "reason": "Moisture shrinkage / transport bruising",
-      "authorizedBy": "Ramesh Patel"
+      "authorizedBy": "Ramesh Patel",
+      "createdAt": "2026-09-19T10:10:12.992Z"
     },
     {
       "id": "tx-1789812612981-gdnh",
@@ -130,7 +207,8 @@
       "date": "2026-09-19T10:10:12.981Z",
       "source": "Farmer Harvest / Inward Entry",
       "recordedVia": "MANUAL",
-      "notes": "Stock-in transaction"
+      "notes": "Stock-in transaction",
+      "createdAt": "2026-09-19T10:10:12.984Z"
     },
     {
       "id": "tx-004",
@@ -344,6 +422,35 @@
   ],
   "marketplaceListings": [
     {
+      "id": "listing-1789820166533",
+      "farmerId": "farmer-01",
+      "farmerName": "Ramesh Patel",
+      "farmerPhone": "+919876543210",
+      "crop": "Paddy",
+      "variety": "BPT Sona Masoori",
+      "quantity": 50,
+      "unit": "bags",
+      "askingPrice": 1900,
+      "currency": "INR",
+      "location": "Guntur Rural, AP",
+      "grade": "Grade A",
+      "harvestDate": "2026-09-19",
+      "status": "ACTIVE",
+      "description": "Farm-fresh quality produce ready for immediate dispatch.",
+      "offers": [
+        {
+          "id": "off-1789820166536",
+          "buyerName": "Kisan Wholesale Trader",
+          "buyerPhone": "+919848012345",
+          "offeredPrice": 1880,
+          "offeredQuantity": 50,
+          "notes": "Ready for immediate pickup.",
+          "status": "PENDING",
+          "date": "2026-09-19T12:16:06.536Z"
+        }
+      ]
+    },
+    {
       "id": "listing-1789812612998",
       "farmerId": "farmer-01",
       "farmerName": "Ramesh Patel",
@@ -369,6 +476,26 @@
           "notes": "Ready for immediate pickup.",
           "status": "PENDING",
           "date": "2026-09-19T10:10:13.001Z"
+        },
+        {
+          "id": "off-1789812856994",
+          "buyerName": "FarmNexus System Admin",
+          "buyerPhone": "+91 98480 12345",
+          "offeredPrice": 1900,
+          "offeredQuantity": 50,
+          "notes": "Offer submitted via FarmNexus buyer portal.",
+          "status": "PENDING",
+          "date": "2026-09-19T10:14:16.994Z"
+        },
+        {
+          "id": "off-1789812974314",
+          "buyerName": "Vikram Singhal (Kisan Fresh)",
+          "buyerPhone": "+91 98480 12345",
+          "offeredPrice": 1900,
+          "offeredQuantity": 50,
+          "notes": "Offer submitted via FarmNexus buyer portal.",
+          "status": "PENDING",
+          "date": "2026-09-19T10:16:14.314Z"
         }
       ]
     },
@@ -386,7 +513,7 @@
       "location": "Guntur Rural, AP (12 km from city)",
       "grade": "Grade A Fresh",
       "harvestDate": "2026-09-17",
-      "status": "ACTIVE",
+      "status": "ACCEPTED",
       "description": "Direct farm plucked, uniform bright red, sorted & crated.",
       "offers": [
         {
@@ -398,7 +525,20 @@
           "status": "PENDING",
           "date": "2026-09-18T16:00:00Z"
         }
-      ]
+      ],
+      "acceptedDeal": {
+        "dealId": "DEAL-154752",
+        "buyerName": "Priya Sharma (Direct Consumer)",
+        "buyerPhone": "+91 98480 12345",
+        "buyerAddress": "Flat 402, Green Meadows, Madhapur, Hyderabad",
+        "buyerRole": "Direct Consumer",
+        "agreedPrice": 24,
+        "agreedQuantity": 250,
+        "unit": "kg",
+        "totalAmount": 6000,
+        "acceptedAt": "2026-09-19T12:15:54.752Z",
+        "status": "CONFIRMED_ORDER"
+      }
     },
     {
       "id": "listing-02",

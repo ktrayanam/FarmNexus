@@ -17,6 +17,7 @@ import {
   getMarketplaceListings,
   createMarketplaceListing,
   submitBuyerOffer,
+  acceptMarketplaceRequest,
   getFpoAggregations,
   getColdStorages,
   getLogistics,
@@ -313,6 +314,15 @@ app.post("/api/marketplace/listings", (req, res) => {
 app.post("/api/marketplace/listings/:id/offer", (req, res) => {
   try {
     const result = submitBuyerOffer(req.params.id, req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post("/api/marketplace/listings/:id/accept", (req, res) => {
+  try {
+    const result = acceptMarketplaceRequest(req.params.id, req.body);
     res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
