@@ -55,14 +55,28 @@ FarmNexus features a dedicated role-based login portal with custom workflows per
 ---
 
 ## 🍃 MongoDB Mongoose Database Layer
-
+ 
+- **Active Local Database**: **MongoDB Community 7.0.43** installed locally on macOS via Homebrew (`sh.brew.mongodb-community`) and actively listening on port `27017`.
+- **Database Connection**: `mongodb://127.0.0.1:27017/farmnexus` with 2-way real-time persistence between Mongoose models and the API.
 - **Models**: `User`, `Inventory`, `Transaction`, `MandiPrice`, `MarketplaceListing`, `FpoAggregation`, `ColdStorage`, `Logistics` in `backend/models/`.
-- **Local MongoDB**: Automatically defaults to `mongodb://127.0.0.1:27017/farmnexus`.
-- **MongoDB Atlas Cloud**: Set `MONGODB_URI` in `backend/.env`:
+- **MongoDB Atlas Cloud (Optional)**: Set `MONGODB_URI` in `backend/.env` if you wish to use an external cloud cluster:
   ```env
   MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/farmnexus?retryWrites=true&w=majority
   ```
-- **Resilient Fallback**: If MongoDB is not yet running or if you are offline, FarmNexus automatically operates on its resilient local store so your hackathon demo **never crashes**!
+- **Resilient Fallback Guarantee**: If MongoDB is stopped, FarmNexus automatically operates on its resilient local store so your hackathon demo **never crashes**!
+
+---
+
+## 🎙️ Multilingual Voice-First Architecture
+
+FarmNexus delivers a completely voice-guided experience designed specifically for smallholder farmers:
+
+- **Interactive Voice Waveforms**: Visual pulsing sound wave bars during active listening.
+- **Natural Language Understanding (NLU)**: Handles English, Telugu (`te-IN`), Hindi (`hi-IN`), and code-mixed speech (*"Tomato entha undi?"*, *"tamatar kitna hai"*).
+- **Text-to-Speech (TTS) Engine**: Speaks responses natively in Telugu, Hindi, or English.
+- **🔊 Dashboard Voice Briefing (ఆడియో బ్రీఫింగ్)**: 1-click morning briefing on the Farmer Dashboard reciting portfolio value, active stocks, and perishable alerts.
+- **🔊 AI Crop Doctor Prescription (ఆడియో ప్రిస్క్రిప్షన్)**: Spoken audio diagnosis detailing pathogen severity, organic remedies, and chemical dosage.
+- **🔊 Mandi Price Broadcast (ధరల ఆడియో)**: Verbal broadcast of today's live APMC mandi prices and market trends.
 
 ---
 
