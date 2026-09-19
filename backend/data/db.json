@@ -21,15 +21,16 @@
       "id": "inv-01",
       "crop": "Tomato",
       "variety": "Hybrid US 440",
-      "quantity": 350,
+      "quantity": 405,
       "unit": "kg",
-      "unitPrice": 22,
+      "unitPrice": 20,
       "harvestDate": "2026-09-15",
       "grade": "Grade A",
       "minThreshold": 100,
       "storageLocation": "Farm Shed #1",
       "storageDays": 4,
-      "isPerishable": true
+      "isPerishable": true,
+      "updatedAt": "2026-09-19T10:04:17.831Z"
     },
     {
       "id": "inv-02",
@@ -43,7 +44,8 @@
       "minThreshold": 30,
       "storageLocation": "Dry Storage Room",
       "storageDays": 9,
-      "isPerishable": false
+      "isPerishable": false,
+      "updatedAt": "2026-09-19T10:04:17.832Z"
     },
     {
       "id": "inv-03",
@@ -57,7 +59,8 @@
       "minThreshold": 1000,
       "storageLocation": "Central Warehouse",
       "storageDays": 11,
-      "isPerishable": false
+      "isPerishable": false,
+      "updatedAt": "2026-09-19T10:04:17.832Z"
     },
     {
       "id": "inv-04",
@@ -71,7 +74,8 @@
       "minThreshold": 20,
       "storageLocation": "Farm Godown",
       "storageDays": 7,
-      "isPerishable": false
+      "isPerishable": false,
+      "updatedAt": "2026-09-19T10:04:17.832Z"
     },
     {
       "id": "inv-05",
@@ -85,45 +89,48 @@
       "minThreshold": 25,
       "storageLocation": "Shed #2",
       "storageDays": 22,
-      "isPerishable": true
+      "isPerishable": true,
+      "updatedAt": "2026-09-19T10:04:17.832Z"
     }
   ],
   "transactions": [
     {
-      "id": "tx-001",
+      "id": "offline-test-1",
       "type": "STOCK_IN",
       "crop": "Tomato",
-      "quantity": 500,
+      "quantity": 10,
       "unit": "kg",
       "unitPrice": 20,
-      "date": "2026-09-15T08:30:00Z",
-      "source": "Harvest Batch 1",
-      "recordedVia": "VOICE",
-      "notes": "Harvested from North field"
+      "date": "2026-09-19T10:10:13.006Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]",
+      "syncToken": "token-abc-123"
     },
     {
-      "id": "tx-002",
-      "type": "STOCK_OUT",
+      "id": "tx-adj-1789812612991",
+      "type": "ADJUSTMENT",
       "crop": "Tomato",
-      "quantity": 150,
+      "quantity": -5,
       "unit": "kg",
-      "unitPrice": 24,
-      "date": "2026-09-16T11:20:00Z",
-      "source": "Direct Sale to Local Mandi Trader",
-      "recordedVia": "VOICE",
-      "notes": "Sold at Bowenpally Mandi gate"
+      "unitPrice": 22,
+      "date": "2026-09-19T10:10:12.991Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
     },
     {
-      "id": "tx-003",
+      "id": "tx-1789812612981-gdnh",
       "type": "STOCK_IN",
-      "crop": "Chilli",
-      "quantity": 120,
-      "unit": "bags",
-      "unitPrice": 8200,
-      "date": "2026-09-10T14:10:00Z",
-      "source": "Harvest Batch Teja",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T10:10:12.981Z",
+      "source": "Farmer Harvest / Inward Entry",
       "recordedVia": "MANUAL",
-      "notes": "Sun dried and bagged"
+      "notes": "Stock-in transaction"
     },
     {
       "id": "tx-004",
@@ -136,7 +143,47 @@
       "source": "Audit",
       "recordedVia": "MANUAL",
       "reason": "Spoilage / transport bruising",
-      "authorizedBy": "Ramesh Patel"
+      "authorizedBy": "Ramesh Patel",
+      "createdAt": "2026-09-19T10:04:17.834Z"
+    },
+    {
+      "id": "tx-002",
+      "type": "STOCK_OUT",
+      "crop": "Tomato",
+      "quantity": 150,
+      "unit": "kg",
+      "unitPrice": 24,
+      "date": "2026-09-16T11:20:00Z",
+      "source": "Direct Sale to Local Mandi Trader",
+      "recordedVia": "VOICE",
+      "notes": "Sold at Bowenpally Mandi gate",
+      "createdAt": "2026-09-19T10:04:17.834Z"
+    },
+    {
+      "id": "tx-001",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 500,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-15T08:30:00Z",
+      "source": "Harvest Batch 1",
+      "recordedVia": "VOICE",
+      "notes": "Harvested from North field",
+      "createdAt": "2026-09-19T10:04:17.834Z"
+    },
+    {
+      "id": "tx-003",
+      "type": "STOCK_IN",
+      "crop": "Chilli",
+      "quantity": 120,
+      "unit": "bags",
+      "unitPrice": 8200,
+      "date": "2026-09-10T14:10:00Z",
+      "source": "Harvest Batch Teja",
+      "recordedVia": "MANUAL",
+      "notes": "Sun dried and bagged",
+      "createdAt": "2026-09-19T10:04:17.834Z"
     }
   ],
   "mandiPrices": [
@@ -296,6 +343,35 @@
     }
   ],
   "marketplaceListings": [
+    {
+      "id": "listing-1789812612998",
+      "farmerId": "farmer-01",
+      "farmerName": "Ramesh Patel",
+      "farmerPhone": "+919876543210",
+      "crop": "Paddy",
+      "variety": "BPT Sona Masoori",
+      "quantity": 50,
+      "unit": "bags",
+      "askingPrice": 1900,
+      "currency": "INR",
+      "location": "Guntur Rural, AP",
+      "grade": "Grade A",
+      "harvestDate": "2026-09-19",
+      "status": "ACTIVE",
+      "description": "Farm-fresh quality produce ready for immediate dispatch.",
+      "offers": [
+        {
+          "id": "off-1789812613001",
+          "buyerName": "Kisan Wholesale Trader",
+          "buyerPhone": "+919848012345",
+          "offeredPrice": 1880,
+          "offeredQuantity": 50,
+          "notes": "Ready for immediate pickup.",
+          "status": "PENDING",
+          "date": "2026-09-19T10:10:13.001Z"
+        }
+      ]
+    },
     {
       "id": "listing-01",
       "farmerId": "farmer-01",

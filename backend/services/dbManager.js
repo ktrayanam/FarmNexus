@@ -2,12 +2,68 @@ import { initialDb } from "../data/seedData.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  Inventory,
+  Transaction,
+  MarketplaceListing,
+  ColdStorage,
+  Logistics
+} from "../db/mongodb.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_FILE = path.join(__dirname, "../data/db.json");
 
 let state = null;
+
+// Asynchronous MongoDB sync helpers (fire-and-forget so UI is ultra-fast)
+async function persistInventoryItem(item) {
+  try {
+    await Inventory.findOneAndUpdate({ crop: item.crop }, item, { upsert: true, new: true });
+  } catch (e) {
+    // Non-blocking fallback
+  }
+}
+
+async function persistTransaction(tx) {
+  try {
+    await Transaction.create(tx);
+  } catch (e) {
+    // Non-blocking fallback
+  }
+}
+
+async function persistListing(listing) {
+  try {
+    await MarketplaceListing.findOneAndUpdate({ id: listing.id }, listing, { upsert: true, new: true });
+  } catch (e) {
+    // Non-blocking fallback
+  }
+}
+
+export async function syncStateWithMongo() {
+  try {
+    const mongoInv = await Inventory.find().lean();
+    if (mongoInv && mongoInv.length > 0) {
+      const db = getDb();
+      db.inventory = mongoInv.map(i => {
+        const { _id, __v, ...rest } = i;
+        return rest;
+      });
+      const mongoTx = await Transaction.find().sort({ date: -1 }).limit(50).lean();
+      if (mongoTx && mongoTx.length > 0) {
+        db.transactions = mongoTx.map(t => {
+          const { _id, __v, ...rest } = t;
+          return rest;
+        });
+      }
+      saveDb();
+      console.log("🍃 In-memory state synchronized with local MongoDB!");
+    }
+  } catch (e) {
+    console.warn("Mongo state sync notice:", e.message);
+  }
+}
 
 export function getDb() {
   if (!state) {
@@ -106,6 +162,8 @@ export function stockIn({ crop, quantity, unit = "kg", unitPrice = 0, notes = ""
 
   db.transactions.unshift(tx);
   saveDb();
+  persistInventoryItem(item);
+  persistTransaction(tx);
 
   return { success: true, updatedItem: item, transaction: tx };
 }
@@ -150,6 +208,8 @@ export function stockOut({ crop, quantity, unit = "kg", unitPrice = 0, notes = "
 
   db.transactions.unshift(tx);
   saveDb();
+  persistInventoryItem(item);
+  persistTransaction(tx);
 
   return { success: true, updatedItem: item, transaction: tx };
 }
@@ -186,6 +246,8 @@ export function stockAdjustment({ crop, quantityChange, unit = "kg", reason = "A
 
   db.transactions.unshift(tx);
   saveDb();
+  persistInventoryItem(item);
+  persistTransaction(tx);
 
   return { success: true, updatedItem: item, transaction: tx };
 }
@@ -335,6 +397,7 @@ export function createMarketplaceListing(listingData) {
 
   db.marketplaceListings.unshift(newListing);
   saveDb();
+  persistListing(newListing);
   return newListing;
 }
 
@@ -358,6 +421,7 @@ export function submitBuyerOffer(listingId, offerData) {
 
   listing.offers.push(offer);
   saveDb();
+  persistListing(listing);
   return { success: true, listing, offer };
 }
 

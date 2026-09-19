@@ -7,21 +7,50 @@ import {
   MapPin,
   Calendar,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { useStock } from "../context/StockContext";
+import { speakText, stopSpeaking } from "../services/speechSynthesis";
 
 export default function MarketPrices({ onNavigateToListing }) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { mandiPrices } = useStock();
   const [selectedCropFilter, setSelectedCropFilter] = useState("ALL");
+  const [isPlayingPrices, setIsPlayingPrices] = useState(false);
 
   const filteredPrices = selectedCropFilter === "ALL"
     ? mandiPrices
     : mandiPrices.filter((p) => p.crop.toLowerCase() === selectedCropFilter.toLowerCase());
 
   const cropTabs = ["ALL", "Tomato", "Chilli", "Cotton", "Onion", "Paddy"];
+
+  const handlePlayPriceBroadcast = () => {
+    if (isPlayingPrices) {
+      stopSpeaking();
+      setIsPlayingPrices(false);
+      return;
+    }
+
+    setIsPlayingPrices(true);
+    const topPrices = filteredPrices.slice(0, 3);
+    let spoken = "";
+    if (language === "te") {
+      const summary = topPrices.map(p => `${p.market} మార్కెట్‌లో ${p.crop} క్వింటాలుకు ₹${p.modalPrice}`).join(". ");
+      spoken = `ఈరోజు తాజా మార్కెట్ ధరలు: ${summary}. లాభదాయకమైన ధర లభించినప్పుడు విక్రయించండి.`;
+    } else if (language === "hi") {
+      const summary = topPrices.map(p => `${p.market} में ${p.crop} ₹${p.modalPrice} प्रति क्विंटल`).join(". ");
+      spoken = `आज के ताज़ा मंडी भाव: ${summary}। सही समय पर अपनी फसल का विक्रय करें।`;
+    } else {
+      const summary = topPrices.map(p => `${p.crop} at ${p.market} is ₹${p.modalPrice} per quintal`).join(". ");
+      spoken = `Today's live APMC mandi rates: ${summary}.`;
+    }
+
+    speakText(spoken, language);
+    setTimeout(() => setIsPlayingPrices(false), 9000);
+  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
@@ -37,9 +66,23 @@ export default function MarketPrices({ onNavigateToListing }) {
           </p>
         </div>
 
-        <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-3 py-1 rounded-full self-start border border-stone-200">
-          🕒 Synced Live: 19 Sep 2026 APMC Data
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handlePlayPriceBroadcast}
+            className="bg-agri-50 hover:bg-agri-100 border border-agri-300 text-agri-900 font-bold px-3.5 py-1.5 rounded-full flex items-center gap-1.5 text-xs transition-all shadow-2xs"
+          >
+            {isPlayingPrices ? (
+              <VolumeX size={14} className="text-red-600 animate-pulse" />
+            ) : (
+              <Volume2 size={14} className="text-agri-700 animate-pulse" />
+            )}
+            <span>{isPlayingPrices ? "Stop Audio" : "Listen to Rates (ధరల ఆడియో)"}</span>
+          </button>
+
+          <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-full border border-stone-200">
+            🕒 Synced Live: 19 Sep 2026 APMC Data
+          </span>
+        </div>
       </div>
 
       {/* Commodity Filter Tabs */}

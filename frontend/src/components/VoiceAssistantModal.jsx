@@ -151,12 +151,31 @@ export default function VoiceAssistantModal({ isOpen, onClose, onConfirmTransact
               {isListening ? <MicOff size={42} /> : <Mic size={42} />}
             </button>
 
-            <p className="mt-4 text-sm font-bold text-stone-800 text-center">
-              {isListening ? t("voiceListening") : t("voiceTapToStop") ? "Tap Microphone to Speak" : "Tap Microphone to Speak"}
-            </p>
-            <p className="text-xs text-stone-500 mt-1">
-              Active Language: <strong className="text-agri-800 uppercase">{language}</strong> (auto-detects code-mixed speech)
-            </p>
+            {/* Audio Waveform Animation when listening */}
+            {isListening ? (
+              <div className="flex flex-col items-center mt-3">
+                <div className="flex items-center gap-1.5 h-6">
+                  <span className="w-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:-0.3s] h-4"></span>
+                  <span className="w-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:-0.15s] h-6"></span>
+                  <span className="w-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:-0.45s] h-3"></span>
+                  <span className="w-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:-0.2s] h-5"></span>
+                  <span className="w-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:-0.35s] h-6"></span>
+                  <span className="w-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:-0.1s] h-3"></span>
+                </div>
+                <p className="mt-2 text-sm font-bold text-red-600 animate-pulse">
+                  Listening for Telugu, Hindi, or English...
+                </p>
+              </div>
+            ) : (
+              <div className="text-center mt-3">
+                <p className="text-sm font-bold text-stone-800">
+                  Tap Microphone or pick a prompt below
+                </p>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Supports Telugu, Hindi, English, & Code-Mixed Speech
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Transcript / Input Box */}
@@ -215,11 +234,27 @@ export default function VoiceAssistantModal({ isOpen, onClose, onConfirmTransact
 
               {/* Stock Query Response */}
               {nluResult.answerText && (
-                <div className="bg-white rounded-xl p-3 border border-emerald-100 shadow-xs">
+                <div className="bg-white rounded-xl p-3 border border-emerald-100 shadow-xs space-y-2">
                   <div className="flex items-start gap-2 text-stone-800 font-semibold text-sm">
-                    <Volume2 size={18} className="text-agri-700 shrink-0 mt-0.5" />
+                    <Volume2 size={18} className="text-agri-700 shrink-0 mt-0.5 animate-pulse" />
                     <span>{nluResult.answerText}</span>
                   </div>
+                  {nluResult.parsed.intent === "QUERY_STOCK" && (
+                    <button
+                      onClick={() => { stopSpeaking(); onClose(); onNavigateTab("produce"); }}
+                      className="text-xs font-bold text-agri-800 hover:text-agri-950 flex items-center gap-1 mt-1"
+                    >
+                      <span>View Inventory & Stock Details &rarr;</span>
+                    </button>
+                  )}
+                  {nluResult.parsed.intent === "QUERY_PRICE" && (
+                    <button
+                      onClick={() => { stopSpeaking(); onClose(); onNavigateTab("mandi-prices"); }}
+                      className="text-xs font-bold text-agri-800 hover:text-agri-950 flex items-center gap-1 mt-1"
+                    >
+                      <span>Compare Mandi Rates Across APMCs &rarr;</span>
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -257,7 +292,7 @@ export default function VoiceAssistantModal({ isOpen, onClose, onConfirmTransact
                     onClick={handleConfirmAction}
                     className="w-full bg-agri-700 hover:bg-agri-800 text-white font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md transition-all mt-2"
                   >
-                    <span>Proceed to Confirm</span>
+                    <span>Proceed to Confirm & Execute</span>
                     <ArrowRight size={16} />
                   </button>
                 </div>
@@ -266,26 +301,26 @@ export default function VoiceAssistantModal({ isOpen, onClose, onConfirmTransact
               {/* Navigation intents */}
               {nluResult.parsed.intent === "DIAGNOSE_CROP" && (
                 <button
-                  onClick={() => { onClose(); onNavigateTab("crop-doctor"); }}
-                  className="w-full bg-agri-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2"
+                  onClick={() => { stopSpeaking(); onClose(); onNavigateTab("crop-doctor"); }}
+                  className="w-full bg-agri-700 hover:bg-agri-800 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
                 >
-                  Open AI Crop Doctor &rarr;
+                  <span>Open AI Crop Doctor &rarr;</span>
                 </button>
               )}
               {nluResult.parsed.intent === "FIND_STORAGE" && (
                 <button
-                  onClick={() => { onClose(); onNavigateTab("cold-storage"); }}
-                  className="w-full bg-blue-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2"
+                  onClick={() => { stopSpeaking(); onClose(); onNavigateTab("cold-storage"); }}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
                 >
-                  Discover Cold Storage Facilities &rarr;
+                  <span>Discover Cold Storage Facilities &rarr;</span>
                 </button>
               )}
               {nluResult.parsed.intent === "FIND_LOGISTICS" && (
                 <button
-                  onClick={() => { onClose(); onNavigateTab("logistics"); }}
-                  className="w-full bg-purple-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2"
+                  onClick={() => { stopSpeaking(); onClose(); onNavigateTab("logistics"); }}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
                 >
-                  Book Freight Logistics &rarr;
+                  <span>Book Freight Logistics &rarr;</span>
                 </button>
               )}
             </div>
@@ -295,7 +330,7 @@ export default function VoiceAssistantModal({ isOpen, onClose, onConfirmTransact
           <div className="space-y-2 pt-2 border-t border-stone-200">
             <div className="flex items-center justify-between text-xs font-bold text-stone-600">
               <span>{t("voiceTryPrompt")} (Hackathon Test Prompts)</span>
-              <span className="text-[10px] text-stone-400">Tap to test instantly</span>
+              <span className="text-[10px] text-stone-400">Tap to test voice instantly</span>
             </div>
             <div className="flex flex-col gap-1.5">
               <button
@@ -335,7 +370,31 @@ export default function VoiceAssistantModal({ isOpen, onClose, onConfirmTransact
                 className="text-left bg-stone-100 hover:bg-agri-50 hover:border-agri-300 border border-stone-200 p-2 rounded-xl text-xs font-medium text-stone-800 flex items-center justify-between group transition-all"
               >
                 <span>🗣️ "Market price of Tomato"</span>
-                <span className="text-[10px] bg-stone-200 group-hover:bg-agri-200 px-1.5 py-0.5 rounded font-mono">FR-15 Mandi</span>
+                <span className="text-[10px] bg-stone-200 group-hover:bg-agri-200 px-1.5 py-0.5 rounded font-mono">FR-15 Mandi Rate</span>
+              </button>
+
+              <button
+                onClick={() => handleDemoPrompt("My tomato leaves have yellow spots")}
+                className="text-left bg-stone-100 hover:bg-agri-50 hover:border-agri-300 border border-stone-200 p-2 rounded-xl text-xs font-medium text-stone-800 flex items-center justify-between group transition-all"
+              >
+                <span>🗣️ "My tomato leaves have yellow spots"</span>
+                <span className="text-[10px] bg-stone-200 group-hover:bg-agri-200 px-1.5 py-0.5 rounded font-mono">FR-13 Crop Doctor</span>
+              </button>
+
+              <button
+                onClick={() => handleDemoPrompt("Find cold storage near Guntur")}
+                className="text-left bg-stone-100 hover:bg-agri-50 hover:border-agri-300 border border-stone-200 p-2 rounded-xl text-xs font-medium text-stone-800 flex items-center justify-between group transition-all"
+              >
+                <span>🗣️ "Find cold storage near Guntur"</span>
+                <span className="text-[10px] bg-stone-200 group-hover:bg-agri-200 px-1.5 py-0.5 rounded font-mono">FR-18 Cold Storage</span>
+              </button>
+
+              <button
+                onClick={() => handleDemoPrompt("Book transport truck for 500 kg")}
+                className="text-left bg-stone-100 hover:bg-agri-50 hover:border-agri-300 border border-stone-200 p-2 rounded-xl text-xs font-medium text-stone-800 flex items-center justify-between group transition-all"
+              >
+                <span>🗣️ "Book transport truck for 500 kg"</span>
+                <span className="text-[10px] bg-stone-200 group-hover:bg-agri-200 px-1.5 py-0.5 rounded font-mono">FR-19 Logistics</span>
               </button>
             </div>
           </div>

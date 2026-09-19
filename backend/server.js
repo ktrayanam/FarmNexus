@@ -30,7 +30,12 @@ app.use(cors());
 app.use(express.json());
 
 // Initialize MongoDB Connection (resilient fallback)
-connectMongoDB();
+connectMongoDB().then(async (connected) => {
+  if (connected) {
+    const { syncStateWithMongo } = await import("./services/dbManager.js");
+    await syncStateWithMongo();
+  }
+});
 
 // Configure multer for crop image uploads
 const upload = multer({
@@ -213,6 +218,30 @@ app.post("/api/voice/nlu", (req, res) => {
         spokenResponse = `Latest ${match.crop} rate at ${match.market} is ₹${match.modalPrice} per ${match.unit}. Trend is ${match.trend}.`;
         answerText = `${match.market} - ${match.crop}: ₹${match.modalPrice}/${match.unit} (${match.trend})`;
       }
+    } else if (parsed.intent === "DIAGNOSE_CROP") {
+      const lang = preferredLanguage || parsed.language;
+      spokenResponse = lang === "te" 
+        ? "AI పంట డాక్టర్ తెరవబడుతుంది. ఆకు వ్యాధిని తనిఖీ చేయండి."
+        : lang === "hi"
+        ? "AI फसल डॉक्टर खोला जा रहा है। पत्ती रोग की जांच करें।"
+        : "Opening AI Crop Doctor to diagnose leaf disease.";
+      answerText = "AI Crop Doctor: Ready for photo diagnosis.";
+    } else if (parsed.intent === "FIND_STORAGE") {
+      const lang = preferredLanguage || parsed.language;
+      spokenResponse = lang === "te"
+        ? "సమీప శీతల గిడ్డంగులను (కోల్డ్ స్టోరేజ్) కనుగొనడం."
+        : lang === "hi"
+        ? "निकटतम कोल्ड स्टोरेज सुविधाओं की खोज की जा रही है।"
+        : "Discovering nearest cold storage facilities.";
+      answerText = "Cold Storage: Controlled-atmosphere facilities located.";
+    } else if (parsed.intent === "FIND_LOGISTICS") {
+      const lang = preferredLanguage || parsed.language;
+      spokenResponse = lang === "te"
+        ? "రవాణా లారీ మరియు ట్రక్ బుకింగ్ క్యాలిక్యులేటర్ తెరవబడుతుంది."
+        : lang === "hi"
+        ? "माल ढुलाई ट्रक बुकिंग कैलकुलेटर खोला जा रहा है।"
+        : "Opening freight transport & truck booking calculator.";
+      answerText = "Freight Logistics: Verified rural transport vehicles found.";
     }
 
     res.json({

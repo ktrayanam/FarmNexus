@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Package,
   TrendingUp,
@@ -10,19 +10,56 @@ import {
   ShieldAlert,
   ChevronRight,
   Plus,
-  Minus
+  Minus,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { useStock } from "../context/StockContext";
+import { speakText, stopSpeaking } from "../services/speechSynthesis";
 
 export default function FarmerDashboard({ onOpenVoice, setActiveTab, onQuickStockIn, onQuickStockOut }) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { user } = useAuth();
   const { inventory, alerts, transactions } = useStock();
+  const [isPlayingBriefing, setIsPlayingBriefing] = useState(false);
 
   const totalValue = inventory.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
   const lowStockCount = alerts.filter(a => a.type === "LOW_STOCK").length;
+
+  const handlePlayVoiceBriefing = () => {
+    if (isPlayingBriefing) {
+      stopSpeaking();
+      setIsPlayingBriefing(false);
+      return;
+    }
+
+    setIsPlayingBriefing(true);
+    let briefing = "";
+    if (language === "te") {
+      briefing = `నమస్కారం ${user.name} గారు. మీ ఫార్మ్‌నెక్సస్ సారాంశం: మీ వద్ద మొత్తం ${inventory.length} రకాల పంటలు ఉన్నాయి. ప్రస్తుత నిల్వల మొత్తం విలువ సుమారు ${totalValue.toLocaleString()} రూపాయలు. ${
+        alerts.length > 0
+          ? `గమనిక: ${alerts.length} ముఖ్యమైన హెచ్చరికలు ఉన్నాయి. ${alerts[0].title}.`
+          : "అన్ని పంటల నిల్వలు సురక్షిత స్థితిలో ఉన్నాయి."
+      }`;
+    } else if (language === "hi") {
+      briefing = `नमस्ते ${user.name} जी। आपका फ़ार्मनेक्सस सारांश: आपके पास कुल ${inventory.length} प्रकार की फसलें हैं। वर्तमान स्टॉक का कुल मूल्य लगभग ₹${totalValue.toLocaleString()} है। ${
+        alerts.length > 0
+          ? `ध्यान दें: ${alerts.length} अलर्ट उपलब्ध हैं। ${alerts[0].title}।`
+          : "सभी फसलों का स्टॉक सुरक्षित स्थिति में है।"
+      }`;
+    } else {
+      briefing = `Hello ${user.name}. Here is your FarmNexus morning briefing: You have ${inventory.length} active crops in inventory with an estimated total portfolio value of ₹${totalValue.toLocaleString()}. ${
+        alerts.length > 0
+          ? `Urgent attention required: ${alerts[0].title} - ${alerts[0].message}.`
+          : "All crop stocks are in healthy standing."
+      }`;
+    }
+
+    speakText(briefing, language);
+    setTimeout(() => setIsPlayingBriefing(false), 8500);
+  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
@@ -50,8 +87,20 @@ export default function FarmerDashboard({ onOpenVoice, setActiveTab, onQuickStoc
             </p>
           </div>
 
-          {/* Quick Voice Entry CTA inside Hero */}
+          {/* Quick Voice Entry and Audio Briefing inside Hero */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <button
+              onClick={handlePlayVoiceBriefing}
+              className="bg-white/15 hover:bg-white/25 border border-white/25 text-white font-bold px-4 py-3 rounded-2xl flex items-center justify-center gap-2 transition-all text-sm backdrop-blur-xs shadow-sm hover:scale-[1.02] active:scale-95"
+            >
+              {isPlayingBriefing ? (
+                <VolumeX size={18} className="text-amber-300 animate-pulse" />
+              ) : (
+                <Volume2 size={18} className="text-emerald-300 animate-pulse" />
+              )}
+              <span>{isPlayingBriefing ? "Stop Briefing" : "Audio Briefing (ఆడియో బ్రీఫింగ్)"}</span>
+            </button>
+
             <button
               onClick={onOpenVoice}
               className="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-black px-5 py-3 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40 hover:scale-[1.02] active:scale-95 transition-all text-sm"

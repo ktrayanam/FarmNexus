@@ -10,10 +10,13 @@ import {
   ShieldCheck,
   Sparkles,
   ExternalLink,
-  Leaf
+  Leaf,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { diagnoseCrop } from "../services/api";
+import { speakText, stopSpeaking } from "../services/speechSynthesis";
 
 const PRESET_CASES = [
   {
@@ -69,13 +72,14 @@ const PRESET_CASES = [
 ];
 
 export default function CropDoctor() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [selectedCrop, setSelectedCrop] = useState("Tomato");
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [diagnosisResult, setDiagnosisResult] = useState(null);
   const [showExpertModal, setShowExpertModal] = useState(false);
+  const [isPlayingPrescription, setIsPlayingPrescription] = useState(false);
 
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
@@ -108,6 +112,31 @@ export default function CropDoctor() {
     setPreviewUrl(null);
     setSelectedFile(null);
     handleRunDiagnosis(preset.crop);
+  };
+
+  const handlePlayPrescription = () => {
+    if (!diagnosisResult) return;
+    if (isPlayingPrescription) {
+      stopSpeaking();
+      setIsPlayingPrescription(false);
+      return;
+    }
+
+    setIsPlayingPrescription(true);
+    const orgTreatment = diagnosisResult.treatment?.organic?.[0] || "Spray Neem oil 5ml per liter.";
+    const chemTreatment = diagnosisResult.treatment?.chemical?.[0] || "Consult agriculture extension officer.";
+
+    let spoken = "";
+    if (language === "te") {
+      spoken = `పంట డాక్టర్ నిర్ధారణ: ${diagnosisResult.crop} పంటలో ${diagnosisResult.diseaseName} గుర్తించబడింది. తీవ్రత: ${diagnosisResult.severity}. సహజ నివారణ: ${orgTreatment}. రసాయన మందు: ${chemTreatment}. అత్యవసర సంప్రదింపుల కోసం కేవీకే హెల్ప్‌లైన్ 1551 కి కాల్ చేయండి.`;
+    } else if (language === "hi") {
+      spoken = `फसल डॉक्टर रिपोर्ट: ${diagnosisResult.crop} में ${diagnosisResult.diseaseName} पाया गया है। गंभीरता: ${diagnosisResult.severity}। जैविक उपचार: ${orgTreatment}। रासायनिक उपचार: ${chemTreatment}। सहायता के लिए किसान हेल्पलाइन 1551 डायल करें।`;
+    } else {
+      spoken = `Crop Doctor Diagnosis: Detected ${diagnosisResult.diseaseName} in ${diagnosisResult.crop}. Severity is ${diagnosisResult.severity}. Recommended organic remedy: ${orgTreatment}. Chemical treatment: ${chemTreatment}. For free expert support, dial Kisan helpline 1551.`;
+    }
+
+    speakText(spoken, language);
+    setTimeout(() => setIsPlayingPrescription(false), 9500);
   };
 
   return (
@@ -250,7 +279,19 @@ export default function CropDoctor() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={handlePlayPrescription}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs shadow-sm transition-all active:scale-95"
+              >
+                {isPlayingPrescription ? (
+                  <VolumeX size={15} className="text-amber-300 animate-pulse" />
+                ) : (
+                  <Volume2 size={15} className="text-white animate-pulse" />
+                )}
+                <span>{isPlayingPrescription ? "Stop Audio" : "Listen to Prescription (ఆడియో ప్రిస్క్రిప్షన్)"}</span>
+              </button>
+
               <div className="text-right">
                 <span className="text-xs text-stone-500 block font-semibold">{t("confidence")}</span>
                 <span className="text-2xl font-black text-emerald-700">
