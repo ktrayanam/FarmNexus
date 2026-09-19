@@ -1,14 +1,20 @@
 {
   "name": "farmnexus-workspace",
-  "version": "1.0.0",
-  "description": "FarmNexus - Voice-First AI Platform for Smart Crop Care & Direct Market Access",
+  "version": "2.0.0",
+  "description": "FarmNexus - Python AI Platform for Smart Crop Care & Direct Market Access",
   "private": true,
   "scripts": {
     "start": "npm run dev",
-    "dev:backend": "cd backend && node server.js",
+    "dev": "concurrently \"npm run dev:backend:py\" \"npm run dev:frontend\"",
+    "dev:py": "concurrently \"npm run dev:backend:py\" \"npm run dev:frontend\"",
+    "dev:backend:py": "python3 -m uvicorn backend_python.main:app --port 5050 --reload",
+    "dev:streamlit": "streamlit run streamlit_app.py --server.port 8501",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "test": "cd backend && node test_suite.js",
+    "test": "npm run test:py",
+    "test:py": "python3 backend_python/test_suite.py",
+    "dev:node": "concurrently \"npm run dev:backend:node\" \"npm run dev:frontend\"",
+    "dev:backend:node": "cd backend && node server.js",
+    "test:node": "cd backend && node test_suite.js",
     "install:all": "cd backend && npm install && cd ../frontend && npm install"
   },
   "devDependencies": {

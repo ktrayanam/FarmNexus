@@ -1,0 +1,14 @@
+{
+  "python.defaultInterpreterPath": "/Applications/anaconda3/bin/python3",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/backend_python"
+  ],
+  "python.terminal.activateEnvironment": true,
+  "files.associations": {
+    "*.py": "python",
+    "*.json": "jsonc",
+    "*.jsx": "javascriptreact"
+  },
+  "editor.formatOnSave": true
+}

@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🌾 Start FastAPI Backend",
+      "type": "shell",
+      "command": "python3 -m uvicorn backend_python.main:app --port 5050 --reload",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "🌐 Start Streamlit Web App",
+      "type": "shell",
+      "command": "streamlit run streamlit_app.py --server.port 8501",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "🧪 Run Python Test Suite (15/15)",
+      "type": "shell",
+      "command": "python3 backend_python/test_suite.py",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "💻 Start React Frontend",
+      "type": "shell",
+      "command": "cd frontend && npm run dev",
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}
