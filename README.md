@@ -1,69 +1,92 @@
-# 🌾 FarmNexus — Voice-First AI Platform for Farmers
+# 🌾 FarmNexus — Python AI Platform for Farmers & Direct Agri-Marketplace
 
-> **Hackathon Edition (Version 1.0)**  
-> *Voice-First AI Platform for Smart Crop Care & Direct Market Access*
-
----
-
-## 🚀 Quick Start in VS Code
-
-Both frontend and backend are already set up and running on your local machine!
-
-### To run both servers concurrently:
-```bash
-npm run dev
-```
-
-### To run individually:
-```bash
-# Terminal 1: Start Backend API (Port 5050)
-cd backend && node server.js
-
-# Terminal 2: Start Frontend Web App (Port 3000)
-cd frontend && npm run dev
-```
-
-### To run the automated verification test suite:
-```bash
-npm test
-# OR: cd backend && node test_suite.js
-```
+> **Hackathon Edition (Version 2.0 — Python Native)**  
+> *Voice-First AI Platform for Smart Crop Care & Direct Market Access*  
+> *Built with **Python FastAPI**, **PyMongo**, **MongoDB 7.0**, **Streamlit**, and **React 18**.*
 
 ---
 
-## 🌐 Live URLs
+## 🐍 Python Platform Quick Start
 
-- **Frontend Application**: [http://localhost:3000](http://localhost:3000)
-- **Backend API Server**: [http://localhost:5050/api/health](http://localhost:5050/api/health)
+FarmNexus is fully implemented in **Python 3.12**! You can run the Python FastAPI backend, the Streamlit full-stack web app, or the 15/15 automated Python test suite using the handy launcher script:
+
+### 1. Launch FastAPI Backend (Port 5050):
+```bash
+./run_python.sh api
+# OR directly:
+python3 -m uvicorn backend_python.main:app --port 5050 --reload
+```
+- **Interactive Swagger UI (API Explorer)**: [http://localhost:5050/docs](http://localhost:5050/docs)
+- **ReDoc Interactive Documentation**: [http://localhost:5050/redoc](http://localhost:5050/redoc)
+- **Health Check & Telemetry**: [http://localhost:5050/api/health](http://localhost:5050/api/health)
+- **MongoDB Status**: [http://localhost:5050/api/db/status](http://localhost:5050/api/db/status)
+
+### 2. Run Pure Python Full-Stack App (Streamlit - Port 8501):
+```bash
+./run_python.sh web
+# OR directly:
+streamlit run streamlit_app.py --server.port 8501
+```
+- **Streamlit Web Dashboard**: [http://localhost:8501](http://localhost:8501)
+- Features all modules in 100% pure Python:
+  - Role-based login (Farmer, Direct Consumer, FPO, Admin)
+  - Multilingual voice NLU assistant (Telugu, Hindi, English)
+  - AI Crop Doctor pathology & treatment guide
+  - Direct Consumer Marketplace with instant digital trade contracts
+  - Mandi price trends and comparison charts
+  - Cold storage directory & rural logistics freight calculator
+
+### 3. Run Automated Python Test Suite (15/15 Passed):
+```bash
+./run_python.sh test
+# OR directly:
+python3 backend_python/test_suite.py
+```
+
+### 4. Run Both FastAPI & Streamlit Concurrently:
+```bash
+./run_python.sh both
+```
+
+---
+
+## 🌐 Live Web Interfaces
+
+- **Pure Python Streamlit App**: [http://localhost:8501](http://localhost:8501)
+- **React Frontend Application**: [http://localhost:3000](http://localhost:3000)
+- **FastAPI Backend API**: [http://localhost:5050/api/health](http://localhost:5050/api/health)
+- **Interactive Swagger UI**: [http://localhost:5050/docs](http://localhost:5050/docs)
 - **MongoDB Health & Status**: [http://localhost:5050/api/db/status](http://localhost:5050/api/db/status)
 
 ---
 
 ## 🔐 Role-Based Access Control (RBAC) & Personas
 
-FarmNexus features a dedicated role-based login portal with custom workflows per persona:
+FarmNexus features a dedicated role-based portal with custom workflows per persona:
 
 | Persona | Purpose | Default Credentials | Authorized Access |
 |---|---|---|---|
 | **🌾 Farmer (రైతు)** | Voice stock entry, crop health, mandi rates, direct sales | Mobile: `9876543210`<br>OTP: `1234` | Dashboard, Stock/Produce, AI Crop Doctor, Mandi Rates, Marketplace, Cold Storage, Logistics |
-| **🏢 Buyer** | Sourcing farm produce, purchase offers | Phone: `9848012345`<br>Password: `buyer123` | Direct Marketplace, Mandi Rates, Cold Storage, Logistics |
+| **🛒 Direct Consumer / Buyer** | Direct farm sourcing, accept farmer sell requests with contracts | Phone: `9848012345`<br>Password: `buyer123` | Direct Marketplace, Mandi Rates, Cold Storage, Logistics |
 | **🤝 FPO Manager** | Collective produce aggregation & bulk selling | Reg No: `FPO-AP-GNT-2022-098`<br>PIN: `fpo123` | FPO Pooling Hub, Produce Ledger, Mandi Rates, Cold Storage |
 | **⚙️ System Admin** | Platform monitoring, audit trails & database governance | Email: `admin@farmnexus.gov.in`<br>Key: `admin123` | Full Command Center, User Directory, Audit Logs, Mandi Feeds, DB Telemetry |
 
-*Note: One-click demo login buttons are provided on the login page for instant access without typing.*
-
 ---
 
-## 🍃 MongoDB Mongoose Database Layer
+## 🍃 MongoDB & PyMongo Database Layer
  
-- **Active Local Database**: **MongoDB Community 7.0.43** installed locally on macOS via Homebrew (`sh.brew.mongodb-community`) and actively listening on port `27017`.
-- **Database Connection**: `mongodb://127.0.0.1:27017/farmnexus` with 2-way real-time persistence between Mongoose models and the API.
-- **Models**: `User`, `Inventory`, `Transaction`, `MandiPrice`, `MarketplaceListing`, `FpoAggregation`, `ColdStorage`, `Logistics` in `backend/models/`.
-- **MongoDB Atlas Cloud (Optional)**: Set `MONGODB_URI` in `backend/.env` if you wish to use an external cloud cluster:
-  ```env
-  MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/farmnexus?retryWrites=true&w=majority
-  ```
-- **Resilient Fallback Guarantee**: If MongoDB is stopped, FarmNexus automatically operates on its resilient local store so your hackathon demo **never crashes**!
+- **Active Local Database**: **MongoDB Community 7.0.43** installed locally on macOS and actively listening on port `27017`.
+- **Database Connection**: `mongodb://127.0.0.1:27017/farmnexus` connected via PyMongo with real-time bidirectional synchronization.
+- **Collections Managed**:
+  1. `users` (Farmer, Buyer, FPO, Admin)
+  2. `inventories` (Live stock ledger)
+  3. `transactions` (Stock in, stock out, audit logs)
+  4. `mandiprices` (APMC yards & 7-day trend histories)
+  5. `marketplacelistings` (Active farm lots & accepted deals)
+  6. `fpoaggregations` (Collective bulk pools)
+  7. `coldstorages` (Controlled-atmosphere facilities)
+  8. `logistics` (Verified rural transport fleet)
+- **Resilient Fallback Guarantee**: If MongoDB is stopped, FarmNexus automatically operates on its resilient local store (`data/db.json`) so your hackathon demo **never crashes**!
 
 ---
 
@@ -71,93 +94,57 @@ FarmNexus features a dedicated role-based login portal with custom workflows per
 
 FarmNexus delivers a completely voice-guided experience designed specifically for smallholder farmers:
 
-- **Interactive Voice Waveforms**: Visual pulsing sound wave bars during active listening.
-- **Natural Language Understanding (NLU)**: Handles English, Telugu (`te-IN`), Hindi (`hi-IN`), and code-mixed speech (*"Tomato entha undi?"*, *"tamatar kitna hai"*).
-- **Text-to-Speech (TTS) Engine**: Speaks responses natively in Telugu, Hindi, or English.
-- **🔊 Dashboard Voice Briefing (ఆడియో బ్రీఫింగ్)**: 1-click morning briefing on the Farmer Dashboard reciting portfolio value, active stocks, and perishable alerts.
-- **🔊 AI Crop Doctor Prescription (ఆడియో ప్రిస్క్రిప్షన్)**: Spoken audio diagnosis detailing pathogen severity, organic remedies, and chemical dosage.
-- **🔊 Mandi Price Broadcast (ధరల ఆడియో)**: Verbal broadcast of today's live APMC mandi prices and market trends.
+- **Natural Language Understanding (NLU)**: Native Python parser for English, Telugu (`te`), Hindi (`hi`), and code-mixed speech (*"Tomato entha undi?"*, *"tamatar kitna hai"*).
+- **Text-to-Speech (TTS)**: Verbal responses in Telugu, Hindi, or English.
+- **Stock Automation**: Direct translation of spoken sentences like *"Add 200 kilos of tomatoes"* or *"I sold 100 kg tomatoes for 25 rupees per kilo"* into structured database mutations.
 
 ---
 
 ## 📋 Features Implemented (FR-01 to FR-20)
 
-| Requirement | Feature | Location in Code |
+| Requirement | Feature | Python Implementation |
 |---|---|---|
-| **FR-01** | Farmer Registration & OTP Auth | `backend/server.js`, `frontend/src/context/AuthContext.jsx` |
-| **FR-02** | Produce Management | `frontend/src/components/ProduceManagement.jsx` |
-| **FR-03** | Stock-In | `backend/services/dbManager.js` (`stockIn`) |
-| **FR-04** | Stock-Out with Limit Validation | `backend/services/dbManager.js` (`stockOut`) |
-| **FR-05** | Stock Adjustment Audit Ledger | `backend/services/dbManager.js` (`stockAdjustment`) |
-| **FR-06** | Supported Trade Units (`kg`, `bags`, `tonnes`, `boxes`...) | `frontend/src/components/ProduceManagement.jsx` |
-| **FR-07** | Spoken Stock Entry (Speech-to-Text & Entity Extractor) | `backend/services/nluEngine.js`, `frontend/src/components/VoiceAssistantModal.jsx` |
-| **FR-08** | Voice Confirmation Modal & Audio Prompt | `frontend/src/components/VoiceConfirmationModal.jsx` |
-| **FR-09** | Regional Languages (Telugu `తెలుగు`, Hindi `हिन्दी`, English) | `frontend/src/translations/{te,hi,en}.js` |
-| **FR-10** | Mixed-Language NLU (*"Tomato entha undi?"*, *"tamatar kitna hai"*) | `backend/services/nluEngine.js` |
-| **FR-11** | Live Stock Voice Assistant | `backend/server.js` (`/api/voice/nlu`) |
-| **FR-12** | Smart Farm Alerts (Low Stock, Storage Aging, Price Surges) | `backend/services/dbManager.js` (`getSmartAlerts`) |
-| **FR-13** | AI Crop Image Diagnosis | `backend/services/diseaseModel.js`, `frontend/src/components/CropDoctor.jsx` |
-| **FR-14** | Organic & Chemical Treatment Guidance + KVK Helpline | `frontend/src/components/CropDoctor.jsx` |
-| **FR-15** | Mandi Market Prices & 7-Day Trend Charts | `frontend/src/components/MarketPrices.jsx` |
-| **FR-16** | Farmer-to-Buyer Marketplace (Listings, Offers, WhatsApp) | `frontend/src/components/Marketplace.jsx` |
-| **FR-17** | FPO Module (Aggregated Produce Pooling & Bulk Tenders) | `frontend/src/components/FPOModule.jsx` |
-| **FR-18** | Cold Storage Discovery & Space Booking | `frontend/src/components/ColdStorageDiscovery.jsx` |
-| **FR-19** | Logistics Support & Freight Calculator | `frontend/src/components/LogisticsSupport.jsx` |
-| **FR-20** | Offline Mode & Batch Sync with Deduplication | `frontend/src/services/offlineSync.js`, `backend/services/dbManager.js` |
+| **FR-01** | Role-Based Access Control & Auth | `backend_python/main.py` (`/api/auth/login`) |
+| **FR-02** | Produce Management | `backend_python/services/db_manager.py` |
+| **FR-03** | Stock-In (Harvest Entry) | `backend_python/services/db_manager.py` (`stock_in`) |
+| **FR-04** | Stock-Out with Limit Validation | `backend_python/services/db_manager.py` (`stock_out`) |
+| **FR-05** | Stock Adjustment Audit Ledger | `backend_python/services/db_manager.py` (`stock_adjustment`) |
+| **FR-06** | Supported Trade Units (`kg`, `bags`, `quintals`) | `backend_python/services/nlu_engine.py` |
+| **FR-07** | Spoken Stock Entry (NLU) | `backend_python/services/nlu_engine.py` (`parse_voice_input`) |
+| **FR-08** | Voice Confirmation & Spoken Response | `backend_python/main.py` (`/api/voice/nlu`) |
+| **FR-09** | Regional Languages (Telugu, Hindi, English) | `backend_python/services/nlu_engine.py` |
+| **FR-10** | Mixed-Language NLU (*"Tomato entha undi?"*) | `backend_python/services/nlu_engine.py` |
+| **FR-11** | Live Stock Voice Assistant | `backend_python/main.py` (`/api/voice/nlu`) |
+| **FR-12** | Smart Farm Alerts (Low Stock, Aging, Price Surges) | `backend_python/services/db_manager.py` (`get_smart_alerts`) |
+| **FR-13** | AI Crop Image Diagnosis | `backend_python/services/disease_model.py` (`diagnose_crop_image`) |
+| **FR-14** | Organic & Chemical Treatment Guidance + KVK Helpline | `backend_python/services/disease_model.py` |
+| **FR-15** | Mandi Market Prices & 7-Day Trend Charts | `backend_python/services/db_manager.py` (`get_mandi_prices`) |
+| **FR-16** | Direct Marketplace (Farmer Requests & Consumer Deals) | `backend_python/services/db_manager.py` (`accept_marketplace_request`) |
+| **FR-17** | FPO Module (Produce Pooling & Bulk Sourcing) | `backend_python/services/db_manager.py` (`get_fpo_aggregations`) |
+| **FR-18** | Cold Storage Discovery & Space Booking | `backend_python/services/db_manager.py` (`get_cold_storages`) |
+| **FR-19** | Logistics Support & Freight Calculator | `backend_python/services/db_manager.py` (`get_logistics`) |
+| **FR-20** | Offline Mode & Batch Sync with Deduplication | `backend_python/services/db_manager.py` (`sync_batch_transactions`) |
 
 ---
 
-## 🗂️ Project Directory Map
+## 🗂️ Python Project Directory Structure
 
 ```text
 farmnexus/
-├── package.json                 # Root script runner (npm run dev, npm test)
-├── README.md                    # Project documentation & guide
-├── backend/
-│   ├── package.json             # Express, Cors, Multer, UUID
-│   ├── server.js                # Express REST API (Port 5050)
-│   ├── test_suite.js            # Automated verification test suite (15 tests)
+├── run_python.sh                # Interactive launcher script (api, web, test, both)
+├── streamlit_app.py             # Pure Python full-stack application (Streamlit)
+├── README.md                    # Platform documentation
+├── backend_python/
+│   ├── main.py                  # FastAPI server with Swagger UI (/docs) on port 5050
+│   ├── test_suite.py            # Automated test suite (15/15 tests passing)
 │   ├── data/
-│   │   ├── seedData.js          # Realistic Indian agricultural seed data
-│   │   └── db.json              # Local persistent JSON database
+│   │   └── seed_data.py         # Agricultural dataset (crops, users, prices, diseases)
+│   ├── db/
+│   │   └── mongo.py             # PyMongo MongoDB 7.0 driver & telemetry manager
 │   └── services/
-│       ├── dbManager.js         # Inventory operations & offline sync deduplication
-│       ├── nluEngine.js         # Multilingual & code-mixed voice NLU
-│       └── diseaseModel.js      # AI Crop Doctor disease classifier & treatments
-│
-└── frontend/
-    ├── package.json             # React 18, Vite, Tailwind CSS, Lucide React
-    ├── vite.config.js           # Dev server config & proxy
-    ├── tailwind.config.js       # Agricultural color palette
-    ├── index.html               # Mobile viewport & multilingual Google fonts
-    └── src/
-        ├── App.jsx              # Main router & modal controller
-        ├── main.jsx             # React root with Context Providers
-        ├── index.css            # Styles & voice animations
-        ├── components/
-        │   ├── Navbar.jsx               # Top bar, language picker, offline switch
-        │   ├── OfflineBanner.jsx        # Offline status & sync counter
-        │   ├── VoiceAssistantModal.jsx  # Web Speech STT & NLU testing
-        │   ├── VoiceConfirmationModal.jsx # FR-08 transaction confirmation
-        │   ├── FarmerDashboard.jsx      # KPIs, Smart Alerts, Produce cards
-        │   ├── ProduceManagement.jsx    # Stock-In, Stock-Out, Adjustment
-        │   ├── CropDoctor.jsx           # AI Disease Diagnosis & KVK hotline
-        │   ├── MarketPrices.jsx         # Mandi rates & 7-day trend bars
-        │   ├── Marketplace.jsx          # Produce listings, buyer offers, WhatsApp
-        │   ├── FPOModule.jsx            # Aggregation pools & corporate tenders
-        │   ├── ColdStorageDiscovery.jsx # Facilities directory & reservations
-        │   ├── LogisticsSupport.jsx     # Freight calculator & vehicle booking
-        │   └── AdminPanel.jsx           # Role switcher & database reset
-        ├── context/
-        │   ├── AuthContext.jsx          # Multi-role support (Farmer, Buyer, FPO, Admin)
-        │   ├── LanguageContext.jsx      # Translation provider (Telugu, Hindi, English)
-        │   └── StockContext.jsx         # Live stock store & sync queue
-        ├── translations/
-        │   ├── en.js                    # English dictionary
-        │   ├── te.js                    # Telugu (తెలుగు) dictionary
-        │   └── hi.js                    # Hindi (हिन्दी) dictionary
-        └── services/
-            ├── api.js                   # REST API client
-            ├── offlineSync.js           # Local storage queue & sync engine
-            └── speechSynthesis.js       # Web Speech Synthesis TTS engine
+│       ├── db_manager.py        # Business logic, inventory, and marketplace contracts
+│       ├── nlu_engine.py        # Multilingual voice NLU engine
+│       └── disease_model.py     # AI Crop Doctor plant pathology & KVK guidance
+├── frontend/                    # React 18 frontend (Vite) on port 3000
+└── backend/                     # Node.js Express server (companion / reference)
 ```
