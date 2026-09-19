@@ -21,17 +21,16 @@
       "id": "inv-01",
       "crop": "Tomato",
       "variety": "Hybrid US 440",
-      "quantity": 725.0,
+      "quantity": 835,
       "unit": "kg",
-      "unitPrice": 20.0,
+      "unitPrice": 20,
       "harvestDate": "2026-09-15",
       "grade": "Grade A",
       "minThreshold": 100,
       "storageLocation": "Farm Shed #1",
       "storageDays": 4,
       "isPerishable": true,
-      "updatedAt": "2026-09-19T10:04:17.831Z",
-      "__v": 0
+      "updatedAt": "2026-09-19T10:04:17.831Z"
     },
     {
       "id": "inv-02",
@@ -46,4 +45,1105 @@
       "storageLocation": "Dry Storage Room",
       "storageDays": 9,
       "isPerishable": false,
-      "updatedAt": 
+      "updatedAt": "2026-09-19T10:04:17.832Z"
+    },
+    {
+      "id": "inv-03",
+      "crop": "Cotton",
+      "variety": "Bt Cotton - Shankar 6",
+      "quantity": 4500,
+      "unit": "kg",
+      "unitPrice": 72,
+      "harvestDate": "2026-09-08",
+      "grade": "Grade A",
+      "minThreshold": 1000,
+      "storageLocation": "Central Warehouse",
+      "storageDays": 11,
+      "isPerishable": false,
+      "updatedAt": "2026-09-19T10:04:17.832Z"
+    },
+    {
+      "id": "inv-04",
+      "crop": "Paddy",
+      "variety": "BPT 5204 (Sona Masoori)",
+      "quantity": 30,
+      "unit": "bags",
+      "unitPrice": 1850,
+      "harvestDate": "2026-09-12",
+      "grade": "Common",
+      "minThreshold": 20,
+      "storageLocation": "Farm Godown",
+      "storageDays": 7,
+      "isPerishable": false,
+      "updatedAt": "2026-09-19T10:04:17.832Z"
+    },
+    {
+      "id": "inv-05",
+      "crop": "Onion",
+      "variety": "Nashik Red",
+      "quantity": 18,
+      "unit": "bags",
+      "unitPrice": 1150,
+      "harvestDate": "2026-08-28",
+      "grade": "Medium",
+      "minThreshold": 25,
+      "storageLocation": "Shed #2",
+      "storageDays": 22,
+      "isPerishable": true,
+      "updatedAt": "2026-09-19T10:04:17.832Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "offline-test-1",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T14:10:27.862Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]",
+      "syncToken": "token-abc-123"
+    },
+    {
+      "id": "tx-adj-1789827027844",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:10:27.844Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789827027834-afhs",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:10:27.834Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "tx-1789826663334-145f",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T14:04:23.334101Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]"
+    },
+    {
+      "id": "tx-deal-1789826663329",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 50,
+      "unit": "bags",
+      "unitPrice": 1900,
+      "date": "2026-09-19T14:04:23.329406Z",
+      "source": "Direct Market Sale to Sunita Sharma (Direct Consumer)",
+      "recordedVia": "DIRECT_CONSUMER_ACCEPT",
+      "notes": "Order DEAL-663328 confirmed! Total ₹95,000"
+    },
+    {
+      "id": "tx-adj-1789826663320",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:04:23.320300Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789826663316-ccb9",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:04:23.316322Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "tx-1789826423923-1301",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T14:00:23.923066Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]"
+    },
+    {
+      "id": "tx-deal-1789826423917",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 50,
+      "unit": "bags",
+      "unitPrice": 1900,
+      "date": "2026-09-19T14:00:23.917464Z",
+      "source": "Direct Market Sale to Sunita Sharma (Direct Consumer)",
+      "recordedVia": "DIRECT_CONSUMER_ACCEPT",
+      "notes": "Order DEAL-423916 confirmed! Total ₹95,000"
+    },
+    {
+      "id": "tx-adj-1789826423909",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:00:23.909032Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789826423905-17c7",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:00:23.905347Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "tx-1789825907467-c8da",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T13:51:47.467501Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]"
+    },
+    {
+      "id": "tx-deal-1789825907463",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 50,
+      "unit": "bags",
+      "unitPrice": 1900,
+      "date": "2026-09-19T13:51:47.463241Z",
+      "source": "Direct Market Sale to Sunita Sharma (Direct Consumer)",
+      "recordedVia": "DIRECT_CONSUMER_ACCEPT",
+      "notes": "Order DEAL-907462 confirmed! Total ₹95,000"
+    },
+    {
+      "id": "tx-adj-1789825907456",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T13:51:47.456314Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789825907453-9f2f",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T13:51:47.453217Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "tx-deal-1789825894000",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 50,
+      "unit": "bags",
+      "unitPrice": 1900,
+      "date": "2026-09-19T13:51:34.000340Z",
+      "source": "Direct Market Sale to Sunita Sharma (Direct Consumer)",
+      "recordedVia": "DIRECT_CONSUMER_ACCEPT",
+      "notes": "Order DEAL-893999 confirmed! Total ₹95,000"
+    },
+    {
+      "id": "tx-adj-1789825893989",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T13:51:33.989921Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789825893986-5fa0",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T13:51:33.986291Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "tx-1789825657856-3336",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T13:47:37.856844Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]"
+    },
+    {
+      "id": "tx-deal-1789825657852",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 50,
+      "unit": "bags",
+      "unitPrice": 1900,
+      "date": "2026-09-19T13:47:37.852666Z",
+      "source": "Direct Market Sale to Sunita Sharma (Direct Consumer)",
+      "recordedVia": "DIRECT_CONSUMER_ACCEPT",
+      "notes": "Order DEAL-657851 confirmed! Total ₹95,000"
+    },
+    {
+      "id": "tx-adj-1789825657843",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T13:47:37.843564Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789825657835-f87d",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T13:47:37.835181Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "tx-1789820166542-e44s",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T12:16:06.542Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]",
+      "createdAt": "2026-09-19T12:16:06.543Z"
+    },
+    {
+      "id": "tx-adj-1789820166524",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T12:16:06.524Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel",
+      "createdAt": "2026-09-19T12:16:06.525Z"
+    },
+    {
+      "id": "tx-1789820166520-sqez",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T12:16:06.520Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction",
+      "createdAt": "2026-09-19T12:16:06.520Z"
+    },
+    {
+      "id": "tx-deal-1789820154753",
+      "type": "STOCK_OUT",
+      "crop": "Tomato",
+      "quantity": 250,
+      "unit": "kg",
+      "unitPrice": 24,
+      "date": "2026-09-19T12:15:54.753Z",
+      "source": "Direct Market Sale to Priya Sharma (Direct Consumer)",
+      "recordedVia": "DIRECT_CONSUMER_ACCEPT",
+      "notes": "Order DEAL-154752 confirmed! Total ₹6,000",
+      "createdAt": "2026-09-19T12:15:54.764Z"
+    },
+    {
+      "id": "tx-1789812928288-3yv3",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 25,
+      "unit": "bags",
+      "unitPrice": 1850,
+      "date": "2026-09-19T10:15:28.288Z",
+      "source": "Direct Sale / Outward Transfer",
+      "recordedVia": "VOICE",
+      "notes": "Quick Stock Out: -25 bags Paddy",
+      "createdAt": "2026-09-19T10:15:28.290Z"
+    },
+    {
+      "id": "tx-1789812918125-fit0",
+      "type": "STOCK_OUT",
+      "crop": "Paddy",
+      "quantity": 25,
+      "unit": "bags",
+      "unitPrice": 1850,
+      "date": "2026-09-19T10:15:18.125Z",
+      "source": "Direct Sale / Outward Transfer",
+      "recordedVia": "VOICE",
+      "notes": "Quick Stock Out: -25 bags Paddy",
+      "createdAt": "2026-09-19T10:15:18.127Z"
+    },
+    {
+      "id": "tx-1789812613006-7sr9",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T10:10:13.006Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]",
+      "createdAt": "2026-09-19T10:10:13.007Z"
+    },
+    {
+      "id": "tx-adj-1789812612991",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T10:10:12.991Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel",
+      "createdAt": "2026-09-19T10:10:12.992Z"
+    },
+    {
+      "id": "tx-1789812612981-gdnh",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T10:10:12.981Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction",
+      "createdAt": "2026-09-19T10:10:12.984Z"
+    },
+    {
+      "id": "tx-004",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-17T09:00:00Z",
+      "source": "Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Spoilage / transport bruising",
+      "authorizedBy": "Ramesh Patel",
+      "createdAt": "2026-09-19T10:04:17.834Z"
+    },
+    {
+      "id": "tx-002",
+      "type": "STOCK_OUT",
+      "crop": "Tomato",
+      "quantity": 150,
+      "unit": "kg",
+      "unitPrice": 24,
+      "date": "2026-09-16T11:20:00Z",
+      "source": "Direct Sale to Local Mandi Trader",
+      "recordedVia": "VOICE",
+      "notes": "Sold at Bowenpally Mandi gate",
+      "createdAt": "2026-09-19T10:04:17.834Z"
+    },
+    {
+      "id": "tx-001",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 500,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-15T08:30:00Z",
+      "source": "Harvest Batch 1",
+      "recordedVia": "VOICE",
+      "notes": "Harvested from North field",
+      "createdAt": "2026-09-19T10:04:17.834Z"
+    },
+    {
+      "id": "tx-003",
+      "type": "STOCK_IN",
+      "crop": "Chilli",
+      "quantity": 120,
+      "unit": "bags",
+      "unitPrice": 8200,
+      "date": "2026-09-10T14:10:00Z",
+      "source": "Harvest Batch Teja",
+      "recordedVia": "MANUAL",
+      "notes": "Sun dried and bagged",
+      "createdAt": "2026-09-19T10:04:17.834Z"
+    }
+  ],
+  "mandiPrices": [
+    {
+      "market": "Guntur Mirchi Yard",
+      "state": "Andhra Pradesh",
+      "crop": "Chilli",
+      "variety": "Teja",
+      "minPrice": 16500,
+      "maxPrice": 19800,
+      "modalPrice": 18200,
+      "unit": "quintal",
+      "date": "2026-09-19",
+      "trend": "up",
+      "changePercent": "+4.2%",
+      "history": [
+        17200,
+        17400,
+        17100,
+        17600,
+        17900,
+        18000,
+        18200
+      ]
+    },
+    {
+      "market": "Bowenpally APMC, Hyderabad",
+      "state": "Telangana",
+      "crop": "Tomato",
+      "variety": "Local Hybrid",
+      "minPrice": 2000,
+      "maxPrice": 2700,
+      "modalPrice": 2400,
+      "unit": "quintal",
+      "date": "2026-09-19",
+      "trend": "up",
+      "changePercent": "+8.5%",
+      "history": [
+        1900,
+        2050,
+        2100,
+        2150,
+        2200,
+        2300,
+        2400
+      ]
+    },
+    {
+      "market": "Kolar APMC",
+      "state": "Karnataka",
+      "crop": "Tomato",
+      "variety": "Himsona",
+      "minPrice": 2200,
+      "maxPrice": 2900,
+      "modalPrice": 2600,
+      "unit": "quintal",
+      "date": "2026-09-19",
+      "trend": "up",
+      "changePercent": "+5.1%",
+      "history": [
+        2100,
+        2200,
+        2300,
+        2450,
+        2400,
+        2550,
+        2600
+      ]
+    },
+    {
+      "market": "Warangal Market Yard",
+      "state": "Telangana",
+      "crop": "Cotton",
+      "variety": "Bt Cotton",
+      "minPrice": 6800,
+      "maxPrice": 7450,
+      "modalPrice": 7200,
+      "unit": "quintal",
+      "date": "2026-09-19",
+      "trend": "stable",
+      "changePercent": "+0.5%",
+      "history": [
+        7150,
+        7180,
+        7220,
+        7190,
+        7210,
+        7200,
+        7200
+      ]
+    },
+    {
+      "market": "Nashik APMC (Lasalgaon)",
+      "state": "Maharashtra",
+      "crop": "Onion",
+      "variety": "Red Onion",
+      "minPrice": 2100,
+      "maxPrice": 3200,
+      "modalPrice": 2850,
+      "unit": "quintal",
+      "date": "2026-09-19",
+      "trend": "up",
+      "changePercent": "+11.2%",
+      "history": [
+        2200,
+        2350,
+        2400,
+        2550,
+        2700,
+        2800,
+        2850
+      ]
+    },
+    {
+      "market": "Azadpur Mandi, Delhi",
+      "state": "Delhi",
+      "crop": "Tomato",
+      "variety": "Hybrid",
+      "minPrice": 2400,
+      "maxPrice": 3100,
+      "modalPrice": 2800,
+      "unit": "quintal",
+      "date": "2026-09-19",
+      "trend": "up",
+      "changePercent": "+6.0%",
+      "history": [
+        2300,
+        2400,
+        2500,
+        2600,
+        2650,
+        2750,
+        2800
+      ]
+    },
+    {
+      "market": "Guntur Market Yard",
+      "state": "Andhra Pradesh",
+      "crop": "Paddy",
+      "variety": "Sona Masoori",
+      "minPrice": 2300,
+      "maxPrice": 2550,
+      "modalPrice": 2450,
+      "unit": "quintal",
+      "date": "2026-09-19",
+      "trend": "stable",
+      "changePercent": "0.0%",
+      "history": [
+        2450,
+        2460,
+        2450,
+        2450,
+        2440,
+        2450,
+        2450
+      ]
+    }
+  ],
+  "marketplaceListings": [
+    {
+      "id": "listing-1789827027851",
+      "farmerId": "farmer-01",
+      "farmerName": "Ramesh Patel",
+      "farmerPhone": "+919876543210",
+      "crop": "Paddy",
+      "variety": "BPT Sona Masoori",
+      "quantity": 50,
+      "unit": "bags",
+      "askingPrice": 1900,
+      "currency": "INR",
+      "location": "Guntur Rural, AP",
+      "grade": "Grade A",
+      "harvestDate": "2026-09-19",
+      "status": "ACTIVE",
+      "description": "Farm-fresh quality produce ready for immediate dispatch.",
+      "offers": [
+        {
+          "id": "off-1789827027857",
+          "buyerName": "Kisan Wholesale Trader",
+          "buyerPhone": "+919848012345",
+          "offeredPrice": 1880,
+          "offeredQuantity": 50,
+          "notes": "Ready for immediate pickup.",
+          "status": "PENDING",
+          "date": "2026-09-19T14:10:27.857Z"
+        }
+      ]
+    },
+    {
+      "id": "listing-01",
+      "farmerId": "farmer-01",
+      "farmerName": "Ramesh Patel",
+      "farmerPhone": "+919876543210",
+      "crop": "Tomato",
+      "variety": "Hybrid US 440",
+      "quantity": 250,
+      "unit": "kg",
+      "askingPrice": 24,
+      "currency": "INR",
+      "location": "Guntur Rural, AP (12 km from city)",
+      "grade": "Grade A Fresh",
+      "harvestDate": "2026-09-17",
+      "status": "ACTIVE",
+      "description": "Direct farm plucked, uniform bright red, sorted & crated.",
+      "offers": [
+        {
+          "id": "off-1",
+          "buyerName": "Kisan Fresh Traders (Vijayawada)",
+          "buyerPhone": "+919848012345",
+          "offeredPrice": 23,
+          "offeredQuantity": 200,
+          "status": "PENDING",
+          "date": "2026-09-18T16:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "listing-02",
+      "farmerId": "farmer-01",
+      "farmerName": "Ramesh Patel",
+      "farmerPhone": "+919876543210",
+      "crop": "Chilli",
+      "variety": "Guntur Teja (Dry)",
+      "quantity": 50,
+      "unit": "bags",
+      "askingPrice": 8700,
+      "currency": "INR",
+      "location": "Guntur, AP",
+      "grade": "Export High Pungency SHU > 50,000",
+      "harvestDate": "2026-09-10",
+      "status": "ACTIVE",
+      "description": "Moisture content < 10%, clean stemless, zero aflatoxin.",
+      "offers": []
+    }
+  ],
+  "fpoAggregations": [
+    {
+      "id": "fpo-lot-01",
+      "fpoName": "Krishna Delta Farmer Producer Co.",
+      "fpoRegNo": "FPO-AP-GNT-2022-098",
+      "managerName": "Venkateswara Rao",
+      "contact": "+919440056789",
+      "crop": "Tomato",
+      "aggregatedQuantity": 4200,
+      "unit": "kg",
+      "targetPrice": 23.5,
+      "memberCount": 14,
+      "contributions": [
+        {
+          "farmerName": "Ramesh Patel",
+          "quantity": 300,
+          "unit": "kg",
+          "sharePercent": 7.1
+        },
+        {
+          "farmerName": "K. Appa Rao",
+          "quantity": 650,
+          "unit": "kg",
+          "sharePercent": 15.5
+        },
+        {
+          "farmerName": "S. Nageswara Rao",
+          "quantity": 800,
+          "unit": "kg",
+          "sharePercent": 19
+        },
+        {
+          "farmerName": "M. Lakshmi",
+          "quantity": 450,
+          "unit": "kg",
+          "sharePercent": 10.7
+        },
+        {
+          "farmerName": "Others (10 farmers)",
+          "quantity": 2000,
+          "unit": "kg",
+          "sharePercent": 47.7
+        }
+      ],
+      "bulkBuyerInquiries": [
+        {
+          "buyer": "Reliance Retail Agri Sourcing",
+          "proposedRate": 23,
+          "status": "IN_NEGOTIATION"
+        }
+      ]
+    },
+    {
+      "id": "fpo-lot-02",
+      "fpoName": "Krishna Delta Farmer Producer Co.",
+      "fpoRegNo": "FPO-AP-GNT-2022-098",
+      "managerName": "Venkateswara Rao",
+      "contact": "+919440056789",
+      "crop": "Chilli",
+      "aggregatedQuantity": 450,
+      "unit": "bags",
+      "targetPrice": 8600,
+      "memberCount": 8,
+      "contributions": [
+        {
+          "farmerName": "Ramesh Patel",
+          "quantity": 70,
+          "unit": "bags",
+          "sharePercent": 15.5
+        },
+        {
+          "farmerName": "B. Venkatesh",
+          "quantity": 120,
+          "unit": "bags",
+          "sharePercent": 26.7
+        },
+        {
+          "farmerName": "Others (6 farmers)",
+          "quantity": 260,
+          "unit": "bags",
+          "sharePercent": 57.8
+        }
+      ],
+      "bulkBuyerInquiries": [
+        {
+          "buyer": "ITC Spices Division",
+          "proposedRate": 8550,
+          "status": "CONFIRMED"
+        }
+      ]
+    }
+  ],
+  "coldStorages": [
+    {
+      "id": "cs-01",
+      "name": "Sri Lakshmi Multi-Chamber Cold Storage",
+      "location": "Guntur - Vijayawada Bypass, AP",
+      "distanceKm": 4.8,
+      "totalCapacityTonnes": 5000,
+      "availableCapacityTonnes": 1250,
+      "temperatureRange": "0°C to 10°C",
+      "humidityControl": "85% - 95% RH",
+      "rates": {
+        "perBagMonth": 45,
+        "perTonneMonth": 900
+      },
+      "supportedCrops": [
+        "Chilli",
+        "Tomato",
+        "Potato",
+        "Fruits"
+      ],
+      "contactPerson": "K. Murali Krishna",
+      "phone": "+918632234567",
+      "rating": 4.6,
+      "verified": true
+    },
+    {
+      "id": "cs-02",
+      "name": "Delta Agro Refrigeration & Warehousing",
+      "location": "Tenali Road, Guntur District, AP",
+      "distanceKm": 12.2,
+      "totalCapacityTonnes": 3500,
+      "availableCapacityTonnes": 820,
+      "temperatureRange": "2°C to 8°C",
+      "humidityControl": "80% - 90% RH",
+      "rates": {
+        "perBagMonth": 40,
+        "perTonneMonth": 820
+      },
+      "supportedCrops": [
+        "Chilli",
+        "Turmeric",
+        "Onion",
+        "Grains"
+      ],
+      "contactPerson": "V. Rama Rao",
+      "phone": "+918644221199",
+      "rating": 4.4,
+      "verified": true
+    },
+    {
+      "id": "cs-03",
+      "name": "Amaravati Mega Food Park Cold Chain",
+      "location": "Mangalagiri, AP",
+      "distanceKm": 22,
+      "totalCapacityTonnes": 10000,
+      "availableCapacityTonnes": 3400,
+      "temperatureRange": "-2°C to 15°C",
+      "humidityControl": "Multi-Zone Automated",
+      "rates": {
+        "perBagMonth": 52,
+        "perTonneMonth": 1050
+      },
+      "supportedCrops": [
+        "Tomato",
+        "Vegetables",
+        "Mango",
+        "Processed Goods"
+      ],
+      "contactPerson": "P. Ravindra",
+      "phone": "+918662489000",
+      "rating": 4.8,
+      "verified": true
+    },
+    {
+      "id": "cs-04",
+      "name": "Rythu Bandhu Cold Hub",
+      "location": "Bowenpally Market Yard, Hyderabad, TS",
+      "distanceKm": 285,
+      "totalCapacityTonnes": 6000,
+      "availableCapacityTonnes": 450,
+      "temperatureRange": "1°C to 12°C",
+      "humidityControl": "Standard",
+      "rates": {
+        "perBagMonth": 50,
+        "perTonneMonth": 950
+      },
+      "supportedCrops": [
+        "Vegetables",
+        "Tomato",
+        "Fruits"
+      ],
+      "contactPerson": "K. Prabhakar",
+      "phone": "+914027751122",
+      "rating": 4.3,
+      "verified": true
+    }
+  ],
+  "logistics": [
+    {
+      "id": "veh-01",
+      "vehicleType": "Tata Ace ('Chota Hathi')",
+      "capacityKg": 850,
+      "ratePerKm": 15,
+      "baseFare": 350,
+      "suitableFor": "Local market trips (< 35 km), 20-30 crates of tomatoes",
+      "driverName": "Venkat Rao",
+      "driverPhone": "+919701234567",
+      "vehicleNumber": "AP 07 TA 1422",
+      "rating": 4.8,
+      "etaMinutes": 20
+    },
+    {
+      "id": "veh-02",
+      "vehicleType": "Mahindra Bolero Maxi Truck Plus",
+      "capacityKg": 1600,
+      "ratePerKm": 20,
+      "baseFare": 550,
+      "suitableFor": "Inter-district delivery, 50-70 crates or 30 bags of chilli",
+      "driverName": "Suresh Reddy",
+      "driverPhone": "+919848123901",
+      "vehicleNumber": "AP 07 TE 8890",
+      "rating": 4.9,
+      "etaMinutes": 30
+    },
+    {
+      "id": "veh-03",
+      "vehicleType": "Eicher 407 (Light Commercial)",
+      "capacityKg": 3800,
+      "ratePerKm": 28,
+      "baseFare": 950,
+      "suitableFor": "Bulk mandi transport, 120-150 bags of produce",
+      "driverName": "Mohammed Ali",
+      "driverPhone": "+919949012345",
+      "vehicleNumber": "AP 07 TX 4410",
+      "rating": 4.7,
+      "etaMinutes": 45
+    },
+    {
+      "id": "veh-04",
+      "vehicleType": "Refrigerated Van (Reefer Truck)",
+      "capacityKg": 3200,
+      "ratePerKm": 38,
+      "baseFare": 1800,
+      "suitableFor": "Perishable cold chain (Tomatoes, Capsicum) 4°C-8°C",
+      "driverName": "Srinivas Murthy",
+      "driverPhone": "+919885098765",
+      "vehicleNumber": "AP 16 Z 6701",
+      "rating": 4.9,
+      "etaMinutes": 60
+    }
+  ],
+  "cropDiseases": [
+    {
+      "id": "dis-01",
+      "crop": "Tomato",
+      "diseaseName": "Late Blight",
+      "pathogen": "Phytophthora infestans (Oomycete)",
+      "confidence": 0.94,
+      "severity": "High",
+      "symptoms": [
+        "Irregular, dark, water-soaked brown lesions on leaves",
+        "White fungal mold growth on underside of leaves in humid weather",
+        "Firm, brown, leathery rot spreading across green and ripe tomatoes",
+        "Rapid collapse of foliage mimicking frost burn"
+      ],
+      "organicTreatments": [
+        "Spray Copper Oxychloride or Bordeaux mixture (1%) as protective barrier",
+        "Apply Trichoderma viride bio-fungicide @ 5g/litre of water to root zone",
+        "Spray Panchagavya (3% solution) + fermented butter-milk (10%) to inhibit spore germination",
+        "Remove and safely burn infected plants; improve field drainage"
+      ],
+      "chemicalTreatments": [
+        "Curative spray: Cymoxanil 8% + Mancozeb 64% WP (Curzate) @ 2.5g/litre",
+        "Systemic control: Dimethomorph 50% WP @ 1g/litre OR Metalaxyl-M 4% + Mancozeb 64% WP (Ridomil Gold) @ 2g/litre",
+        "Safety notes: Use gloves & mask; observe 7-day pre-harvest withholding interval (PHI)"
+      ],
+      "kvkHotline": "Krishi Vigyan Kendra Guntur: 1800-425-3535 (Kisan Call Centre 1551)"
+    },
+    {
+      "id": "dis-02",
+      "crop": "Chilli",
+      "diseaseName": "Leaf Curl Virus (Chilli Murda)",
+      "pathogen": "Chilli Leaf Curl Begomovirus (Vector: Whitefly Bemisia tabaci)",
+      "confidence": 0.91,
+      "severity": "Critical",
+      "symptoms": [
+        "Upward curling, puckering, and severe reduction of leaf size",
+        "Thickening and shortening of petioles, severe plant stunting",
+        "Crowded bushy appearance ('witch's broom') with minimal flowering",
+        "Deformed small fruits with low seed set"
+      ],
+      "organicTreatments": [
+        "Install 15 yellow sticky traps per acre to capture adult whiteflies",
+        "Spray Neem Oil (Azadirachtin 10,000 ppm) @ 2.5 ml/litre every 7 days",
+        "Apply Agniastra / Dashaparni Kashayam organic insect repellent spray",
+        "Intercrop with border rows of maize or sorghum (3 rows) as physical vector barrier"
+      ],
+      "chemicalTreatments": [
+        "Vector suppression: Diafenthiuron 50% WP (Pegasus) @ 1.25g/litre",
+        "Systemic control: Acetamiprid 20% SP @ 0.3g/litre OR Spiromesifen 22.9% SC @ 1 ml/litre",
+        "Safety notes: Rotate chemical classes to prevent whitefly resistance. Avoid spraying during peak bee activity (early morning)."
+      ],
+      "kvkHotline": "National Chilli Research Center / KVK: 1800-180-1551"
+    },
+    {
+      "id": "dis-03",
+      "crop": "Cotton",
+      "diseaseName": "Pink Bollworm Infestation",
+      "pathogen": "Pectinophora gossypiella",
+      "confidence": 0.89,
+      "severity": "High",
+      "symptoms": [
+        "Rosetted flowers that fail to open properly",
+        "Small exit bore holes in developing green bolls plugged with excreta",
+        "Premature opening of bolls with stained, unpickable lint and eaten seeds",
+        "Double seeds found fused inside damaged locules"
+      ],
+      "organicTreatments": [
+        "Install 8-10 pheromone traps (Gossyplure) per acre for monitoring & mass trapping",
+        "Release Trichogramma bactrae egg parasitoids @ 60,000/acre at weekly intervals",
+        "Spray Bacillus thuringiensis (Bt formulation) @ 2g/litre during peak flowering",
+        "Destroy and shred crop residues immediately post-harvest to break winter diapause"
+      ],
+      "chemicalTreatments": [
+        "Profenofos 50% EC @ 2 ml/litre during ETL threshold (5-8 moths/trap/night)",
+        "Chlorantraniliprole 18.5% SC (Coragen) @ 0.3 ml/litre for ovicidal action",
+        "Safety notes: Wear respirator & full PPE. Do not graze cattle in sprayed fields for 21 days."
+      ],
+      "kvkHotline": "Central Institute for Cotton Research Helpline: 07103-275536"
+    },
+    {
+      "id": "dis-04",
+      "crop": "Rice / Paddy",
+      "diseaseName": "Blast Disease",
+      "pathogen": "Magnaporthe oryzae (Pyricularia oryzae)",
+      "confidence": 0.93,
+      "severity": "High",
+      "symptoms": [
+        "Diamond or spindle-shaped lesions on leaves with gray centers and brown margins",
+        "Lesions enlarge and coalesce causing entire leaf blade to wither",
+        "Neck blast: Black necrotic ring at panicle node causing head to snap ('empty white panicles')",
+        "Node blast: Dark brown lesions at stem nodes"
+      ],
+      "organicTreatments": [
+        "Seed treatment with Pseudomonas fluorescens @ 10g/kg seed before nursery sowing",
+        "Foliar spray of 20% cow urine + 10% Hing (Asafoetida) extract",
+        "Avoid excessive nitrogenous chemical fertilizers (split urea application)",
+        "Maintain water layer of 2-3 cm in field to reduce blast pressure"
+      ],
+      "chemicalTreatments": [
+        "Tricyclazole 75% WP (Beam) @ 0.6g/litre at early boot-leaf stage",
+        "Isoprothiolane 40% EC @ 1.5 ml/litre OR Kasugamycin 3% SL @ 2.5 ml/litre",
+        "Safety notes: Spray at morning calm; wear boots and protective goggles."
+      ],
+      "kvkHotline": "ICAR Rice Research Institute Toll-free: 1800-425-1199"
+    },
+    {
+      "id": "dis-05",
+      "crop": "Potato",
+      "diseaseName": "Early Blight",
+      "pathogen": "Alternaria solani",
+      "confidence": 0.88,
+      "severity": "Moderate",
+      "symptoms": [
+        "Concentric target-board rings on older lower foliage",
+        "Chlorotic yellow halo surrounding brown necrotic spots",
+        "Lower leaves shrivel, turn dry paper-like and drop prematurely",
+        "Sunken, dark, leathery dry rot lesions on potato tubers"
+      ],
+      "organicTreatments": [
+        "Spray Neem seed kernel extract (NSKE 5%) preventively",
+        "Trichoderma harzianum soil and foliar drench @ 5g/litre",
+        "Mulch beds with dry paddy straw to prevent soil-splash of fungal spores",
+        "Ensure optimal crop rotation with non-solanaceous crops (avoid tomato/chilli/potato consecutively)"
+      ],
+      "chemicalTreatments": [
+        "Chlorothalonil 75% WP (Kavach) @ 2g/litre",
+        "Azoxystrobin 18.2% + Difenoconazole 11.4% SC (Amistar Top) @ 1 ml/litre",
+        "Safety notes: Adhere strictly to 14-day pre-harvest interval."
+      ],
+      "kvkHotline": "Central Potato Research Institute Kisan Helpline: 0177-2625073"
+    }
+  ]
+}

@@ -5,16 +5,14 @@
   "private": true,
   "scripts": {
     "start": "npm run dev",
-    "dev": "concurrently \"npm run dev:backend:py\" \"npm run dev:frontend\"",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && node server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "test": "cd backend && node test_suite.js",
     "dev:py": "concurrently \"npm run dev:backend:py\" \"npm run dev:frontend\"",
     "dev:backend:py": "python3 -m uvicorn backend_python.main:app --port 5050 --reload",
     "dev:streamlit": "streamlit run streamlit_app.py --server.port 8501",
-    "dev:frontend": "cd frontend && npm run dev",
-    "test": "npm run test:py",
     "test:py": "python3 backend_python/test_suite.py",
-    "dev:node": "concurrently \"npm run dev:backend:node\" \"npm run dev:frontend\"",
-    "dev:backend:node": "cd backend && node server.js",
-    "test:node": "cd backend && node test_suite.js",
     "install:all": "cd backend && npm install && cd ../frontend && npm install"
   },
   "devDependencies": {
