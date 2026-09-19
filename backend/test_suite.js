@@ -222,10 +222,123 @@ async function runTests() {
   assert.strictEqual(sync2.duplicatesSkipped, 1);
   console.log("   ✅ Offline sync processed batch and successfully prevented duplicate entries!");
 
-  console.log("\n🎉 ALL 15 AUTOMATED TESTS PASSED SUCCESSFULLY! 💯");
+  // 16. FR-17: FPO Pooling Hub & Corporate Buyer Tenders
+  console.log("16. Testing FR-17: FPO Pooling Lot creation, farmer contribution & tender acceptance...");
+  const newFpoLot = await fetch(`${BASE_URL}/fpo/aggregations`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      crop: "Paddy",
+      aggregatedQuantity: 5000,
+      unit: "kg",
+      targetPrice: 28,
+      fpoName: "Krishna Delta Farmer Producer Co."
+    })
+  }).then(r => r.json());
+  assert.strictEqual(newFpoLot.success, true);
+  assert.ok(newFpoLot.lot.id);
+
+  const contribRes = await fetch(`${BASE_URL}/fpo/aggregations/${newFpoLot.lot.id}/contribute`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      farmerName: "Ramesh Patel",
+      quantity: 500,
+      unit: "kg"
+    })
+  }).then(r => r.json());
+  assert.strictEqual(contribRes.success, true);
+  assert.strictEqual(contribRes.lot.aggregatedQuantity, 5500);
+
+  const tenderRes = await fetch(`${BASE_URL}/fpo/aggregations/${newFpoLot.lot.id}/tender`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      buyer: "ITC Agri Sourcing",
+      status: "CONFIRMED",
+      counterRate: 28.5
+    })
+  }).then(r => r.json());
+  assert.strictEqual(tenderRes.success, true);
+  console.log("   ✅ FPO Bulk pool created, member contribution recorded, and corporate tender confirmed!");
+
+  // 17. Cold Storage Reservations History & Cancel
+  console.log("17. Testing Cold Storage Bookings History & Cancellation...");
+  const allBookings = await fetch(`${BASE_URL}/storage/bookings`).then(r => r.json());
+  assert.strictEqual(allBookings.success, true);
+  assert.ok(allBookings.bookings.length > 0);
+
+  const cancelRes = await fetch(`${BASE_URL}/storage/bookings/${bookRes.booking.bookingId}`, {
+    method: "DELETE"
+  }).then(r => r.json());
+  assert.strictEqual(cancelRes.success, true);
+  assert.strictEqual(cancelRes.booking.status, "CANCELLED");
+  console.log(`   ✅ Cold storage reservation ${bookRes.booking.bookingId} cancelled successfully!`);
+
+  // 18. Logistics Vehicle Trip Booking & Status Update
+  console.log("18. Testing Logistics Vehicle Booking & Live Status Dispatch...");
+  const tripRes = await fetch(`${BASE_URL}/logistics/book`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      vehicleId: "veh-01",
+      distanceKm: 20,
+      pickupLocation: "Guntur Farm Shed",
+      destinationLocation: "Vijayawada Hub",
+      totalFreight: 650
+    })
+  }).then(r => r.json());
+  assert.strictEqual(tripRes.success, true);
+  assert.ok(tripRes.trip.bookingRef);
+
+  const patchTrip = await fetch(`${BASE_URL}/logistics/trips/${tripRes.trip.bookingRef}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "COMPLETED" })
+  }).then(r => r.json());
+  assert.strictEqual(patchTrip.success, true);
+  assert.strictEqual(patchTrip.trip.status, "COMPLETED");
+  console.log(`   ✅ Logistics vehicle booked (${tripRes.trip.bookingRef}) and marked COMPLETED!`);
+
+  // 19. APMC Mandi Price Calibration
+  console.log("19. Testing APMC Mandi Price Calibration & Update...");
+  const updatePriceRes = await fetch(`${BASE_URL}/market/prices`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      market: "Bowenpally APMC, Hyderabad",
+      crop: "Tomato",
+      modalPrice: 2600,
+      trend: "up"
+    })
+  }).then(r => r.json());
+  assert.strictEqual(updatePriceRes.success, true);
+  assert.strictEqual(updatePriceRes.priceItem.modalPrice, 2600);
+  console.log("   ✅ Bowenpally Tomato APMC price calibrated to ₹2600/quintal!");
+
+  // 20. Direct Consumer Request Acceptance & Digital Deal Contract
+  console.log("20. Testing Direct Consumer Instant Deal Acceptance & Digital Contract...");
+  const acceptRes = await fetch(`${BASE_URL}/marketplace/listings/${newListing.listing.id}/accept`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      buyerName: "Priya Sharma (Direct Consumer)",
+      buyerPhone: "+91 98480 12345",
+      buyerAddress: "Flat 402, Green Meadows, Madhapur, Hyderabad",
+      agreedPrice: 1900,
+      agreedQuantity: 50
+    })
+  }).then(r => r.json());
+  assert.strictEqual(acceptRes.success, true);
+  assert.strictEqual(acceptRes.listing.status, "ACCEPTED");
+  assert.ok(acceptRes.deal.dealId);
+  console.log(`   ✅ Direct consumer deal ${acceptRes.deal.dealId} sealed & digital contract generated!`);
+
+  console.log("\n🎉 ALL 20 AUTOMATED END-TO-END TESTS PASSED SUCCESSFULLY! 💯");
 }
 
 runTests().catch(err => {
   console.error("❌ Test suite failed:", err);
   process.exit(1);
 });
+

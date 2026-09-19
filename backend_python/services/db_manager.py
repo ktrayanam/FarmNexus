@@ -469,10 +469,212 @@ def accept_marketplace_request(listing_id: str, deal_data: Optional[Dict[str, An
 def get_fpo_aggregations() -> List[Dict[str, Any]]:
     return get_db().get("fpoAggregations", [])
 
-# 7. Cold Storages
+def create_fpo_aggregation(lot_data: Dict[str, Any]) -> Dict[str, Any]:
+    db = get_db()
+    new_lot = {
+        "id": f"fpo-lot-{int(time.time() * 1000)}",
+        "fpoName": lot_data.get("fpoName", "Krishna Delta Farmer Producer Co."),
+        "fpoRegNo": lot_data.get("fpoRegNo", "FPO-AP-GNT-2022-098"),
+        "managerName": lot_data.get("managerName", "Venkateswara Rao"),
+        "contact": lot_data.get("contact", "+919440056789"),
+        "crop": lot_data.get("crop", "Tomato"),
+        "aggregatedQuantity": float(lot_data.get("aggregatedQuantity", 0)),
+        "unit": lot_data.get("unit", "kg"),
+        "targetPrice": float(lot_data.get("targetPrice", 25)),
+        "memberCount": int(lot_data.get("memberCount", 1)),
+        "contributions": lot_data.get("contributions", [
+            {
+                "farmerName": lot_data.get("initialFarmer", "Ramesh Patel"),
+                "quantity": float(lot_data.get("aggregatedQuantity", 0)),
+                "unit": lot_data.get("unit", "kg"),
+                "sharePercent": 100
+            }
+        ]),
+        "bulkBuyerInquiries": lot_data.get("bulkBuyerInquiries", [])
+    }
+    db.setdefault("fpoAggregations", []).insert(0, new_lot)
+    save_db()
+    return new_lot
+
+def add_fpo_contribution(lot_id: str, farmer_name: str, quantity: float, unit: str = None) -> Dict[str, Any]:
+    db = get_db()
+    lot = next((l for l in db.get("fpoAggregations", []) if l["id"] == lot_id), None)
+    if not lot:
+        raise ValueError("FPO Pooling Lot not found.")
+
+    num_qty = float(quantity)
+    if num_qty <= 0:
+        raise ValueError("Contribution quantity must be positive.")
+
+    lot["aggregatedQuantity"] = round(lot["aggregatedQuantity"] + num_qty, 2)
+    lot["memberCount"] = lot.get("memberCount", 0) + 1
+
+    new_contrib = {
+        "farmerName": farmer_name.strip(),
+        "quantity": num_qty,
+        "unit": unit or lot["unit"],
+        "sharePercent": round((num_qty / lot["aggregatedQuantity"]) * 100, 1)
+    }
+    lot.setdefault("contributions", []).insert(0, new_contrib)
+
+    for c in lot["contributions"]:
+        c["sharePercent"] = round((c["quantity"] / lot["aggregatedQuantity"]) * 100, 1)
+
+    save_db()
+    return {"success": True, "lot": lot, "contribution": new_contrib}
+
+def update_fpo_tender_status(lot_id: str, buyer: str, status: str, counter_rate: float = None) -> Dict[str, Any]:
+    db = get_db()
+    lot = next((l for l in db.get("fpoAggregations", []) if l["id"] == lot_id), None)
+    if not lot:
+        raise ValueError("FPO Pooling Lot not found.")
+
+    tender = next((t for t in lot.get("bulkBuyerInquiries", []) if t["buyer"].lower() == buyer.lower()), None)
+    if tender:
+        tender["status"] = status
+        if counter_rate and float(counter_rate) > 0:
+            tender["proposedRate"] = float(counter_rate)
+    else:
+        lot.setdefault("bulkBuyerInquiries", []).append({
+            "buyer": buyer,
+            "proposedRate": float(counter_rate) if counter_rate else lot["targetPrice"],
+            "status": status or "IN_NEGOTIATION"
+        })
+
+    save_db()
+    return {"success": True, "lot": lot}
+
+def add_fpo_tender(lot_id: str, buyer: str, proposed_rate: float, status: str = "IN_NEGOTIATION") -> Dict[str, Any]:
+    db = get_db()
+    lot = next((l for l in db.get("fpoAggregations", []) if l["id"] == lot_id), None)
+    if not lot:
+        raise ValueError("FPO Pooling Lot not found.")
+
+    tender = {
+        "buyer": buyer.strip(),
+        "proposedRate": float(proposed_rate),
+        "status": status
+    }
+    lot.setdefault("bulkBuyerInquiries", []).append(tender)
+    save_db()
+    return {"success": True, "lot": lot, "tender": tender}
+
+# 7. Cold Storages & Bookings
 def get_cold_storages() -> List[Dict[str, Any]]:
     return get_db().get("coldStorages", [])
 
-# 8. Logistics
+def get_cold_storage_bookings() -> List[Dict[str, Any]]:
+    return get_db().get("coldStorageBookings", [])
+
+def book_cold_storage(booking_data: Dict[str, Any]) -> Dict[str, Any]:
+    db = get_db()
+    storages = get_cold_storages()
+    facility = next((s for s in storages if s["id"] == booking_data.get("facilityId")), storages[0] if storages else {})
+
+    bags = int(booking_data.get("quantityBags", 50))
+    months = int(booking_data.get("durationMonths", 1))
+    rate_per_bag = facility.get("rates", {}).get("perBagMonth", 45)
+    total_cost = bags * rate_per_bag * months
+
+    new_booking = {
+        "id": f"csb-{int(time.time() * 1000)}",
+        "bookingId": f"CSB-{str(int(time.time() * 1000))[-6:]}",
+        "facilityId": facility.get("id"),
+        "facilityName": facility.get("name"),
+        "crop": booking_data.get("crop", "Tomato"),
+        "quantityBags": bags,
+        "durationMonths": months,
+        "estimatedCost": total_cost,
+        "status": "CONFIRMED_PENDING_DELIVERY",
+        "contactPerson": facility.get("contactPerson"),
+        "facilityPhone": facility.get("phone"),
+        "farmerContact": booking_data.get("farmerContact", "+919876543210"),
+        "farmerName": booking_data.get("farmerName", "Ramesh Patel"),
+        "createdAt": datetime.utcnow().isoformat() + "Z"
+    }
+
+    db.setdefault("coldStorageBookings", []).insert(0, new_booking)
+    save_db()
+    return new_booking
+
+def cancel_cold_storage_booking(booking_id: str) -> Dict[str, Any]:
+    db = get_db()
+    booking = next((b for b in db.get("coldStorageBookings", []) if b["bookingId"] == booking_id or b["id"] == booking_id), None)
+    if not booking:
+        raise ValueError("Booking not found.")
+    booking["status"] = "CANCELLED"
+    save_db()
+    return {"success": True, "booking": booking}
+
+# 8. Logistics & Trips
 def get_logistics() -> List[Dict[str, Any]]:
     return get_db().get("logistics", [])
+
+def get_logistics_bookings() -> List[Dict[str, Any]]:
+    return get_db().get("logisticsBookings", [])
+
+def book_logistics_vehicle(trip_data: Dict[str, Any]) -> Dict[str, Any]:
+    db = get_db()
+    vehicles = get_logistics()
+    vehicle = next((v for v in vehicles if v["id"] == trip_data.get("vehicleId")), vehicles[0] if vehicles else {})
+
+    dist = float(trip_data.get("distanceKm", 20))
+    freight = round(vehicle.get("baseFare", 350) + dist * vehicle.get("ratePerKm", 15))
+
+    new_trip = {
+        "id": f"trip-{int(time.time() * 1000)}",
+        "bookingRef": f"LOG-{str(int(time.time() * 1000))[-6:]}",
+        "vehicleId": vehicle.get("id"),
+        "vehicleType": vehicle.get("vehicleType"),
+        "vehicleNumber": vehicle.get("vehicleNumber"),
+        "driverName": vehicle.get("driverName"),
+        "driverPhone": vehicle.get("driverPhone"),
+        "pickupLocation": trip_data.get("pickupLocation", "Guntur Rural Farm Shed #1, AP"),
+        "destinationLocation": trip_data.get("destinationLocation", "Bowenpally APMC Yard, Hyderabad"),
+        "distanceKm": dist,
+        "loadWeightKg": float(trip_data.get("loadWeightKg", 500)),
+        "totalFreight": float(trip_data["totalFreight"]) if "totalFreight" in trip_data else freight,
+        "etaMinutes": vehicle.get("etaMinutes", 25),
+        "status": "DISPATCHED",
+        "farmerName": trip_data.get("farmerName", "Ramesh Patel"),
+        "createdAt": datetime.utcnow().isoformat() + "Z"
+    }
+
+    db.setdefault("logisticsBookings", []).insert(0, new_trip)
+    save_db()
+    return new_trip
+
+def update_logistics_trip_status(booking_ref: str, status: str) -> Dict[str, Any]:
+    db = get_db()
+    trip = next((t for t in db.get("logisticsBookings", []) if t["bookingRef"] == booking_ref or t["id"] == booking_ref), None)
+    if not trip:
+        raise ValueError("Trip not found.")
+    trip["status"] = status
+    save_db()
+    return {"success": True, "trip": trip}
+
+# 9. Mandi Price Updates
+def update_mandi_price(market: str, crop: str, modal_price: float, trend: str = "up") -> Dict[str, Any]:
+    db = get_db()
+    price_item = next((p for p in db.get("mandiPrices", []) if p["market"].lower() == market.lower() and p["crop"].lower() == crop.lower()), None)
+    if not price_item:
+        raise ValueError(f"Market price record for {crop} at {market} not found.")
+
+    old_price = price_item["modalPrice"]
+    num_new = float(modal_price)
+    diff_pct = round(((num_new - old_price) / old_price) * 100, 1)
+
+    price_item["modalPrice"] = num_new
+    price_item["minPrice"] = round(num_new * 0.88)
+    price_item["maxPrice"] = round(num_new * 1.12)
+    price_item["trend"] = "up" if num_new > old_price else "down" if num_new < old_price else "stable"
+    price_item["changePercent"] = f"{'+' if diff_pct >= 0 else ''}{diff_pct}%"
+    price_item["date"] = datetime.utcnow().strftime("%Y-%m-%d")
+
+    price_item.setdefault("history", []).append(num_new)
+    if len(price_item["history"]) > 7:
+        price_item["history"].pop(0)
+
+    save_db()
+    return {"success": True, "priceItem": price_item}
+

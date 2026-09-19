@@ -38,8 +38,19 @@ from backend_python.services.db_manager import (
     submit_buyer_offer,
     accept_marketplace_request,
     get_fpo_aggregations,
+    create_fpo_aggregation,
+    add_fpo_contribution,
+    update_fpo_tender_status,
+    add_fpo_tender,
     get_cold_storages,
+    get_cold_storage_bookings,
+    book_cold_storage,
+    cancel_cold_storage_booking,
     get_logistics,
+    get_logistics_bookings,
+    book_logistics_vehicle,
+    update_logistics_trip_status,
+    update_mandi_price,
     reset_db,
     sync_state_with_mongo
 )
@@ -341,6 +352,18 @@ def api_crop_doctor_diseases():
 def api_get_mandi_prices():
     return {"success": True, "mandiPrices": get_mandi_prices()}
 
+@app.post("/api/market/prices")
+async def api_post_mandi_prices(req: Request):
+    try:
+        body = await req.json()
+        market = body.get("market")
+        crop = body.get("crop")
+        modal_price = body.get("modalPrice")
+        trend = body.get("trend", "up")
+        return update_mandi_price(market, crop, float(modal_price), trend)
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
 # 8. Marketplace & Direct Consumer Orders (FR-16)
 @app.get("/api/marketplace/listings")
 def api_get_listings():
@@ -382,44 +405,68 @@ async def api_accept_request(listing_id: str, req: Request):
 def api_get_fpos():
     return {"success": True, "aggregations": get_fpo_aggregations()}
 
+@app.post("/api/fpo/aggregations")
+async def api_create_fpo(req: Request):
+    try:
+        data = await req.json()
+        lot = create_fpo_aggregation(data)
+        return {"success": True, "lot": lot}
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+@app.post("/api/fpo/aggregations/{lot_id}/contribute")
+async def api_contribute_fpo(lot_id: str, req: Request):
+    try:
+        data = await req.json()
+        result = add_fpo_contribution(
+            lot_id=lot_id,
+            farmer_name=data.get("farmerName", "Farmer Member"),
+            quantity=float(data.get("quantity", 0)),
+            unit=data.get("unit")
+        )
+        return result
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+@app.post("/api/fpo/aggregations/{lot_id}/tender")
+async def api_tender_fpo(lot_id: str, req: Request):
+    try:
+        data = await req.json()
+        buyer = data.get("buyer")
+        status = data.get("status")
+        counter_rate = data.get("counterRate") or data.get("proposedRate")
+        if status in ("CONFIRMED", "REJECTED", "IN_NEGOTIATION"):
+            return update_fpo_tender_status(lot_id, buyer, status, counter_rate)
+        return add_fpo_tender(lot_id, buyer, float(counter_rate), status or "IN_NEGOTIATION")
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
 # 10. Cold Storage Discovery (FR-18)
 @app.get("/api/storage/facilities")
 def api_get_cold_storages():
     return {"success": True, "coldStorages": get_cold_storages()}
 
+@app.get("/api/storage/bookings")
+def api_get_storage_bookings():
+    return {"success": True, "bookings": get_cold_storage_bookings()}
+
 @app.post("/api/storage/book")
 async def api_book_storage(req: Request):
     try:
         body = await req.json()
-        facility_id = body.get("facilityId")
-        crop = body.get("crop", "Tomato")
-        qty_bags = float(body.get("quantityBags", 50))
-        duration = float(body.get("durationMonths", 1))
-        farmer_contact = body.get("farmerContact", "+919876543210")
-
-        storages = get_cold_storages()
-        facility = next((s for s in storages if s["id"] == facility_id), storages[0] if storages else {})
-        per_bag = facility.get("rates", {}).get("perBagMonth", 45)
-        est_cost = qty_bags * per_bag * duration
-
-        booking = {
-            "bookingId": f"CSB-{str(int(time.time() * 1000))[-6:]}",
-            "facilityName": facility.get("name", "Cold Storage Hub"),
-            "crop": crop,
-            "quantityBags": qty_bags,
-            "durationMonths": duration,
-            "estimatedCost": est_cost,
-            "status": "CONFIRMED_PENDING_DELIVERY",
-            "contactPerson": facility.get("contactPerson", "Manager"),
-            "facilityPhone": facility.get("phone", "+918632234567"),
-            "farmerContact": farmer_contact,
-            "createdAt": datetime.utcnow().isoformat() + "Z"
-        }
+        booking = book_cold_storage(body)
         return {
             "success": True,
             "booking": booking,
-            "message": f"Reservation confirmed at {facility.get('name')}. Contact {facility.get('phone')} upon arrival."
+            "message": f"Reservation confirmed at {booking.get('facilityName')}. Ref: {booking.get('bookingId')}"
         }
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+@app.delete("/api/storage/bookings/{booking_id}")
+def api_cancel_storage_booking(booking_id: str):
+    try:
+        return cancel_cold_storage_booking(booking_id)
     except Exception as err:
         raise HTTPException(status_code=400, detail=str(err))
 
@@ -427,6 +474,31 @@ async def api_book_storage(req: Request):
 @app.get("/api/logistics/providers")
 def api_get_logistics():
     return {"success": True, "vehicles": get_logistics()}
+
+@app.get("/api/logistics/trips")
+def api_get_logistics_trips():
+    return {"success": True, "trips": get_logistics_bookings()}
+
+@app.post("/api/logistics/book")
+async def api_book_logistics_trip_endpoint(req: Request):
+    try:
+        body = await req.json()
+        trip = book_logistics_vehicle(body)
+        return {
+            "success": True,
+            "trip": trip,
+            "message": f"Vehicle booked successfully! Booking Ref: {trip.get('bookingRef')}"
+        }
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+@app.patch("/api/logistics/trips/{booking_ref}")
+async def api_patch_trip_endpoint(booking_ref: str, req: Request):
+    try:
+        body = await req.json()
+        return update_logistics_trip_status(booking_ref, body.get("status", "COMPLETED"))
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
 
 @app.post("/api/logistics/estimate")
 async def api_estimate_freight(req: Request):

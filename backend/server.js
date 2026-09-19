@@ -14,13 +14,25 @@ import {
   getSmartAlerts,
   syncBatchTransactions,
   getMandiPrices,
+  updateMandiPrice,
+  addMandiPrice,
   getMarketplaceListings,
   createMarketplaceListing,
   submitBuyerOffer,
   acceptMarketplaceRequest,
   getFpoAggregations,
+  createFpoAggregation,
+  addFpoContribution,
+  updateFpoTenderStatus,
+  addFpoTender,
   getColdStorages,
+  getColdStorageBookings,
+  bookColdStorage,
+  cancelColdStorageBooking,
   getLogistics,
+  getLogisticsBookings,
+  bookLogisticsVehicle,
+  updateLogisticsTripStatus,
   resetDb
 } from "./services/dbManager.js";
 
@@ -292,6 +304,25 @@ app.get("/api/market/prices", (req, res) => {
   }
 });
 
+app.post("/api/market/prices", (req, res) => {
+  try {
+    const { market, crop, modalPrice, trend } = req.body;
+    if (market && crop && modalPrice) {
+      try {
+        const result = updateMandiPrice(market, crop, modalPrice, trend);
+        return res.json(result);
+      } catch (e) {
+        const newPrice = addMandiPrice(req.body);
+        return res.json({ success: true, priceItem: newPrice });
+      }
+    }
+    const newPrice = addMandiPrice(req.body);
+    res.json({ success: true, priceItem: newPrice });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // Marketplace (FR-16)
 app.get("/api/marketplace/listings", (req, res) => {
   try {
@@ -339,6 +370,38 @@ app.get("/api/fpo/aggregations", (req, res) => {
   }
 });
 
+app.post("/api/fpo/aggregations", (req, res) => {
+  try {
+    const lot = createFpoAggregation(req.body);
+    res.json({ success: true, lot });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post("/api/fpo/aggregations/:id/contribute", (req, res) => {
+  try {
+    const result = addFpoContribution(req.params.id, req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post("/api/fpo/aggregations/:id/tender", (req, res) => {
+  try {
+    const { buyer, status, counterRate, proposedRate } = req.body;
+    if (status && (status === "CONFIRMED" || status === "REJECTED" || status === "IN_NEGOTIATION")) {
+      const result = updateFpoTenderStatus(req.params.id, { buyer, status, counterRate });
+      return res.json(result);
+    }
+    const result = addFpoTender(req.params.id, { buyer, proposedRate: proposedRate || counterRate, status });
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // Cold Storage Discovery (FR-18)
 app.get("/api/storage/facilities", (req, res) => {
   try {
@@ -349,31 +412,32 @@ app.get("/api/storage/facilities", (req, res) => {
   }
 });
 
+app.get("/api/storage/bookings", (req, res) => {
+  try {
+    const bookings = getColdStorageBookings();
+    res.json({ success: true, bookings });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post("/api/storage/book", (req, res) => {
   try {
-    const { facilityId, crop, quantityBags, durationMonths, farmerContact } = req.body;
-    const storages = getColdStorages();
-    const facility = storages.find(s => s.id === facilityId) || storages[0];
-
-    const booking = {
-      bookingId: "CSB-" + Date.now().toString().slice(-6),
-      facilityName: facility.name,
-      crop: crop || "Tomato",
-      quantityBags: quantityBags || 50,
-      durationMonths: durationMonths || 1,
-      estimatedCost: (quantityBags || 50) * facility.rates.perBagMonth * (durationMonths || 1),
-      status: "CONFIRMED_PENDING_DELIVERY",
-      contactPerson: facility.contactPerson,
-      facilityPhone: facility.phone,
-      farmerContact: farmerContact || "+919876543210",
-      createdAt: new Date().toISOString()
-    };
-
+    const booking = bookColdStorage(req.body);
     res.json({
       success: true,
       booking,
-      message: `Reservation confirmed at ${facility.name}. Contact ${facility.phone} upon arrival.`
+      message: `Reservation confirmed at ${booking.facilityName}. Reference: ${booking.bookingId}`
     });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.delete("/api/storage/bookings/:id", (req, res) => {
+  try {
+    const result = cancelColdStorageBooking(req.params.id);
+    res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -386,6 +450,38 @@ app.get("/api/logistics/providers", (req, res) => {
     res.json({ success: true, vehicles });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/logistics/trips", (req, res) => {
+  try {
+    const trips = getLogisticsBookings();
+    res.json({ success: true, trips });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/logistics/book", (req, res) => {
+  try {
+    const trip = bookLogisticsVehicle(req.body);
+    res.json({
+      success: true,
+      trip,
+      message: `Vehicle booked successfully! Booking Ref: ${trip.bookingRef}`
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.patch("/api/logistics/trips/:ref", (req, res) => {
+  try {
+    const { status } = req.body;
+    const result = updateLogisticsTripStatus(req.params.ref, status);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 });
 

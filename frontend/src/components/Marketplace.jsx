@@ -38,6 +38,7 @@ export default function Marketplace({ initialCropFilter }) {
   const [showAcceptModal, setShowAcceptModal] = useState(null); // holds listing to accept
   const [showReceiptModal, setShowReceiptModal] = useState(null); // holds accepted deal for receipt
   const [cropFilter, setCropFilter] = useState(initialCropFilter || "ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL"); // "ALL" | "OPEN" | "ACCEPTED"
   const [demoSplitView, setDemoSplitView] = useState(false); // Side-by-side Farmer & Consumer demo
 
   // Form states for creating listing (Farmer Request)
@@ -174,12 +175,18 @@ export default function Marketplace({ initialCropFilter }) {
     }
   };
 
-  const filteredListings = cropFilter === "ALL"
+  let filteredListings = cropFilter === "ALL"
     ? listings
     : listings.filter((l) => l.crop.toLowerCase() === cropFilter.toLowerCase());
 
-  const activeRequests = filteredListings.filter((l) => l.status !== "ACCEPTED");
-  const acceptedDeals = filteredListings.filter((l) => l.status === "ACCEPTED");
+  if (statusFilter === "OPEN") {
+    filteredListings = filteredListings.filter((l) => l.status !== "ACCEPTED");
+  } else if (statusFilter === "ACCEPTED") {
+    filteredListings = filteredListings.filter((l) => l.status === "ACCEPTED");
+  }
+
+  const activeRequests = listings.filter((l) => l.status !== "ACCEPTED");
+  const acceptedDeals = listings.filter((l) => l.status === "ACCEPTED");
 
   // Renders a single listing card with dynamic role actions
   const renderListingCard = (listing, forceRole = null) => {
@@ -536,29 +543,69 @@ export default function Marketplace({ initialCropFilter }) {
       ) : (
         /* STANDARD VIEW (FILTERED BY ROLE PERSPECTIVE) */
         <div className="space-y-6">
-          {/* Commodity Filter Tabs */}
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-              <span className="text-xs font-bold text-stone-500 flex items-center gap-1">
-                <Filter size={13} /> Filter:
-              </span>
+          {/* Deal Status & Category Filter Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-stone-200">
+            {/* Status Pills: All vs Open Requests vs Confirmed Deals */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <button
+                onClick={() => setStatusFilter("ALL")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${
+                  statusFilter === "ALL"
+                    ? "bg-stone-900 text-white shadow-2xs"
+                    : "text-stone-600 hover:bg-stone-100"
+                }`}
+              >
+                <span>All Listings</span>
+                <span className="bg-white/20 font-mono px-1.5 py-0.2 rounded-full text-[10px]">
+                  {listings.length}
+                </span>
+              </button>
+
+              <button
+                onClick={() => setStatusFilter("OPEN")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${
+                  statusFilter === "OPEN"
+                    ? "bg-amber-600 text-white shadow-2xs"
+                    : "text-amber-800 bg-amber-50 hover:bg-amber-100"
+                }`}
+              >
+                <span>🟢 Open Requests</span>
+                <span className="bg-white/20 font-mono px-1.5 py-0.2 rounded-full text-[10px]">
+                  {activeRequests.length}
+                </span>
+              </button>
+
+              <button
+                onClick={() => setStatusFilter("ACCEPTED")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${
+                  statusFilter === "ACCEPTED"
+                    ? "bg-emerald-600 text-white shadow-2xs"
+                    : "text-emerald-800 bg-emerald-50 hover:bg-emerald-100"
+                }`}
+              >
+                <span>✓ Confirmed Orders & Contracts</span>
+                <span className="bg-white/20 font-mono px-1.5 py-0.2 rounded-full text-[10px]">
+                  {acceptedDeals.length}
+                </span>
+              </button>
+            </div>
+
+            {/* Commodity Filter Tabs */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <span className="text-xs font-bold text-stone-400 shrink-0">Crop:</span>
               {["ALL", "Tomato", "Chilli", "Cotton", "Onion", "Paddy"].map((crop) => (
                 <button
                   key={crop}
                   onClick={() => setCropFilter(crop)}
-                  className={`px-3 py-1 rounded-xl text-xs font-bold border transition-all ${
+                  className={`px-2.5 py-1 rounded-xl text-xs font-bold border transition-all ${
                     cropFilter === crop
                       ? "bg-agri-700 text-white border-agri-700 shadow-2xs"
-                      : "bg-white text-stone-700 border-stone-200 hover:bg-stone-50"
+                      : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100"
                   }`}
                 >
                   {crop}
                 </button>
               ))}
-            </div>
-
-            <div className="text-xs text-stone-500 font-medium">
-              Showing <strong>{filteredListings.length}</strong> produce requests ({acceptedDeals.length} deals confirmed)
             </div>
           </div>
 

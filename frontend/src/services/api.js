@@ -122,8 +122,40 @@ export async function fetchFPOAggregations() {
   return res.json();
 }
 
+export async function apiCreateFpoLot(lotData) {
+  const res = await fetch(`${API_BASE}/fpo/aggregations`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(lotData)
+  });
+  return res.json();
+}
+
+export async function apiAddFpoContribution(lotId, contributionData) {
+  const res = await fetch(`${API_BASE}/fpo/aggregations/${lotId}/contribute`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(contributionData)
+  });
+  return res.json();
+}
+
+export async function apiUpdateFpoTender(lotId, tenderData) {
+  const res = await fetch(`${API_BASE}/fpo/aggregations/${lotId}/tender`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(tenderData)
+  });
+  return res.json();
+}
+
 export async function fetchColdStorages() {
   const res = await fetch(`${API_BASE}/storage/facilities`);
+  return res.json();
+}
+
+export async function fetchColdStorageBookings() {
+  const res = await fetch(`${API_BASE}/storage/bookings`);
   return res.json();
 }
 
@@ -136,13 +168,52 @@ export async function apiBookColdStorage(data) {
   return res.json();
 }
 
+export async function apiCancelColdStorageBooking(bookingId) {
+  const res = await fetch(`${API_BASE}/storage/bookings/${bookingId}`, {
+    method: "DELETE"
+  });
+  return res.json();
+}
+
 export async function fetchLogisticsProviders() {
   const res = await fetch(`${API_BASE}/logistics/providers`);
   return res.json();
 }
 
+export async function fetchLogisticsBookings() {
+  const res = await fetch(`${API_BASE}/logistics/trips`);
+  return res.json();
+}
+
+export async function apiBookLogisticsTrip(data) {
+  const res = await fetch(`${API_BASE}/logistics/book`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+
+export async function apiUpdateLogisticsTrip(bookingRef, status) {
+  const res = await fetch(`${API_BASE}/logistics/trips/${bookingRef}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
+  });
+  return res.json();
+}
+
 export async function apiEstimateLogistics(data) {
   const res = await fetch(`${API_BASE}/logistics/estimate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+
+export async function apiUpdateMandiPrice(data) {
+  const res = await fetch(`${API_BASE}/market/prices`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
@@ -163,3 +234,4 @@ export async function apiResetDb() {
   const res = await fetch(`${API_BASE}/reset`, { method: "POST" });
   return res.json();
 }
+

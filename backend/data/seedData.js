@@ -458,6 +458,42 @@ export const initialDb = {
       etaMinutes: 60
     }
   ],
+  coldStorageBookings: [
+    {
+      id: "csb-demo-01",
+      bookingId: "CSB-982144",
+      facilityId: "cs-01",
+      facilityName: "Sri Lakshmi Multi-Chamber Cold Storage",
+      crop: "Chilli",
+      quantityBags: 60,
+      durationMonths: 2,
+      estimatedCost: 5400,
+      status: "CONFIRMED_STORED",
+      farmerContact: "+919876543210",
+      contactPerson: "K. Murali Krishna",
+      facilityPhone: "+918632234567",
+      createdAt: "2026-09-16T10:30:00Z"
+    }
+  ],
+  logisticsBookings: [
+    {
+      id: "trip-demo-01",
+      bookingRef: "LOG-451201",
+      vehicleId: "veh-01",
+      vehicleType: "Tata Ace ('Chota Hathi')",
+      vehicleNumber: "AP 07 TA 1422",
+      driverName: "Venkat Rao",
+      driverPhone: "+919701234567",
+      pickupLocation: "Guntur Rural Farm Shed #1, AP",
+      destinationLocation: "Sri Lakshmi Cold Storage Bypass, Guntur",
+      distanceKm: 14,
+      loadWeightKg: 650,
+      totalFreight: 560,
+      etaMinutes: 15,
+      status: "COMPLETED",
+      createdAt: "2026-09-17T09:15:00Z"
+    }
+  ],
   cropDiseases: [
     {
       id: "dis-01",
