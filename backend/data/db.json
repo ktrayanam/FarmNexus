@@ -340,7 +340,18 @@
       "harvestDate": "2026-09-10",
       "status": "ACTIVE",
       "description": "Moisture content < 10%, clean stemless, zero aflatoxin.",
-      "offers": []
+      "offers": [
+        {
+          "id": "off-1789811254836",
+          "buyerName": "Vikram Singhal",
+          "buyerPhone": "+91 98480 12345",
+          "offeredPrice": 8700,
+          "offeredQuantity": 50,
+          "notes": "Offer submitted via FarmNexus buyer portal.",
+          "status": "PENDING",
+          "date": "2026-09-19T09:47:34.836Z"
+        }
+      ]
     }
   ],
   "fpoAggregations": [

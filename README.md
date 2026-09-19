@@ -35,6 +35,34 @@ npm test
 
 - **Frontend Application**: [http://localhost:3000](http://localhost:3000)
 - **Backend API Server**: [http://localhost:5050/api/health](http://localhost:5050/api/health)
+- **MongoDB Health & Status**: [http://localhost:5050/api/db/status](http://localhost:5050/api/db/status)
+
+---
+
+## 🔐 Role-Based Access Control (RBAC) & Personas
+
+FarmNexus features a dedicated role-based login portal with custom workflows per persona:
+
+| Persona | Purpose | Default Credentials | Authorized Access |
+|---|---|---|---|
+| **🌾 Farmer (రైతు)** | Voice stock entry, crop health, mandi rates, direct sales | Mobile: `9876543210`<br>OTP: `1234` | Dashboard, Stock/Produce, AI Crop Doctor, Mandi Rates, Marketplace, Cold Storage, Logistics |
+| **🏢 Buyer** | Sourcing farm produce, purchase offers | Phone: `9848012345`<br>Password: `buyer123` | Direct Marketplace, Mandi Rates, Cold Storage, Logistics |
+| **🤝 FPO Manager** | Collective produce aggregation & bulk selling | Reg No: `FPO-AP-GNT-2022-098`<br>PIN: `fpo123` | FPO Pooling Hub, Produce Ledger, Mandi Rates, Cold Storage |
+| **⚙️ System Admin** | Platform monitoring, audit trails & database governance | Email: `admin@farmnexus.gov.in`<br>Key: `admin123` | Full Command Center, User Directory, Audit Logs, Mandi Feeds, DB Telemetry |
+
+*Note: One-click demo login buttons are provided on the login page for instant access without typing.*
+
+---
+
+## 🍃 MongoDB Mongoose Database Layer
+
+- **Models**: `User`, `Inventory`, `Transaction`, `MandiPrice`, `MarketplaceListing`, `FpoAggregation`, `ColdStorage`, `Logistics` in `backend/models/`.
+- **Local MongoDB**: Automatically defaults to `mongodb://127.0.0.1:27017/farmnexus`.
+- **MongoDB Atlas Cloud**: Set `MONGODB_URI` in `backend/.env`:
+  ```env
+  MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/farmnexus?retryWrites=true&w=majority
+  ```
+- **Resilient Fallback**: If MongoDB is not yet running or if you are offline, FarmNexus automatically operates on its resilient local store so your hackathon demo **never crashes**!
 
 ---
 
