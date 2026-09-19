@@ -1,0 +1,375 @@
+import express from "express";
+import cors from "cors";
+import multer from "multer";
+import { parseVoiceInput } from "./services/nluEngine.js";
+import { diagnoseCropImage, getAllKnownDiseases } from "./services/diseaseModel.js";
+import {
+  getInventory,
+  getStockByCrop,
+  stockIn,
+  stockOut,
+  stockAdjustment,
+  getTransactions,
+  getSmartAlerts,
+  syncBatchTransactions,
+  getMandiPrices,
+  getMarketplaceListings,
+  createMarketplaceListing,
+  submitBuyerOffer,
+  getFpoAggregations,
+  getColdStorages,
+  getLogistics,
+  resetDb
+} from "./services/dbManager.js";
+
+const app = express();
+const PORT = process.env.PORT || 5050;
+
+app.use(cors());
+app.use(express.json());
+
+// Configure multer for crop image uploads
+const upload = multer({
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
+});
+
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    platform: "FarmNexus",
+    version: "1.0.0",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Reset demo state
+app.post("/api/reset", (req, res) => {
+  const db = resetDb();
+  res.json({ success: true, message: "Database reset to initial demo state.", db });
+});
+
+// Auth / Login (Mock OTP)
+app.post("/api/auth/login", (req, res) => {
+  const { phone, otp, language = "te" } = req.body;
+  if (!phone) {
+    return res.status(400).json({ error: "Phone number is required." });
+  }
+
+  // Any 4 or 6 digit OTP or '1234' is accepted for demo
+  const user = {
+    id: "farmer-01",
+    name: "Ramesh Patel",
+    phone: phone,
+    location: "Guntur Rural, Andhra Pradesh",
+    role: "farmer",
+    preferredLanguage: language,
+    cropsGrown: ["Tomato", "Chilli", "Cotton", "Paddy"],
+    farmSizeAcres: 4.5,
+    token: "demo-jwt-token-" + Date.now()
+  };
+
+  res.json({
+    success: true,
+    user,
+    message: "Login successful via OTP."
+  });
+});
+
+// Inventory APIs
+app.get("/api/inventory", (req, res) => {
+  try {
+    const items = getInventory();
+    res.json({ success: true, inventory: items });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/inventory/:crop", (req, res) => {
+  try {
+    const item = getStockByCrop(req.params.crop);
+    if (!item) {
+      return res.status(404).json({ error: "Crop not found in inventory." });
+    }
+    res.json({ success: true, item });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/inventory/stock-in", (req, res) => {
+  try {
+    const { crop, quantity, unit, unitPrice, notes, recordedVia } = req.body;
+    const result = stockIn({ crop, quantity, unit, unitPrice, notes, recordedVia });
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post("/api/inventory/stock-out", (req, res) => {
+  try {
+    const { crop, quantity, unit, unitPrice, notes, recordedVia } = req.body;
+    const result = stockOut({ crop, quantity, unit, unitPrice, notes, recordedVia });
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post("/api/inventory/adjust", (req, res) => {
+  try {
+    const { crop, quantityChange, unit, reason, authorizedBy } = req.body;
+    const result = stockAdjustment({ crop, quantityChange, unit, reason, authorizedBy });
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get("/api/inventory/transactions", (req, res) => {
+  try {
+    const txs = getTransactions();
+    res.json({ success: true, transactions: txs });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Smart Alerts API (FR-12)
+app.get("/api/alerts", (req, res) => {
+  try {
+    const alerts = getSmartAlerts();
+    res.json({ success: true, alerts });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Voice NLU Engine API (FR-07, FR-08, FR-10, FR-11)
+app.post("/api/voice/nlu", (req, res) => {
+  try {
+    const { text, preferredLanguage } = req.body;
+    const parsed = parseVoiceInput(text);
+
+    // If query stock, enrich with actual live database response
+    let answerText = "";
+    let spokenResponse = "";
+
+    if (parsed.intent === "QUERY_STOCK") {
+      if (parsed.crop) {
+        const item = getStockByCrop(parsed.crop);
+        if (item) {
+          const lang = preferredLanguage || parsed.language;
+          if (lang === "te") {
+            spokenResponse = `మీ వద్ద ప్రస్తుతం ${item.quantity} ${item.unit} ${item.crop} స్టాక్ ఉంది. దీని అంచనా విలువ సుమారు ${item.quantity * item.unitPrice} రూపాయలు.`;
+            answerText = `ప్రస్తుత స్టాక్: ${item.quantity} ${item.unit} (${item.crop}) - మార్కెట్ విలువ: ₹${item.quantity * item.unitPrice}`;
+          } else if (lang === "hi") {
+            spokenResponse = `आपके पास वर्तमान में ${item.quantity} ${item.unit} ${item.crop} उपलब्ध है। कुल मूल्य लगभग ₹${item.quantity * item.unitPrice} है।`;
+            answerText = `वर्तमान स्टॉक: ${item.quantity} ${item.unit} (${item.crop}) - कुल मूल्य: ₹${item.quantity * item.unitPrice}`;
+          } else {
+            spokenResponse = `You currently have ${item.quantity} ${item.unit} of ${item.crop} in stock, valued at approximately ₹${item.quantity * item.unitPrice}.`;
+            answerText = `Current stock: ${item.quantity} ${item.unit} (${item.crop}) - Estimated value: ₹${item.quantity * item.unitPrice}`;
+          }
+        } else {
+          spokenResponse = `Sorry, ${parsed.crop} is not found in your inventory.`;
+          answerText = `No stock records found for ${parsed.crop}.`;
+        }
+      } else {
+        const inv = getInventory();
+        const totalItems = inv.map(i => `${i.crop}: ${i.quantity} ${i.unit}`).join(", ");
+        spokenResponse = `Your inventory summary: ${totalItems}`;
+        answerText = `Inventory: ${totalItems}`;
+      }
+    } else if (parsed.intent === "QUERY_PRICE") {
+      const prices = getMandiPrices();
+      const match = parsed.crop ? prices.find(p => p.crop.toLowerCase() === parsed.crop.toLowerCase()) : prices[0];
+      if (match) {
+        spokenResponse = `Latest ${match.crop} rate at ${match.market} is ₹${match.modalPrice} per ${match.unit}. Trend is ${match.trend}.`;
+        answerText = `${match.market} - ${match.crop}: ₹${match.modalPrice}/${match.unit} (${match.trend})`;
+      }
+    }
+
+    res.json({
+      success: true,
+      parsed,
+      answerText,
+      spokenResponse
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Crop Doctor AI Diagnosis (FR-13, FR-14)
+app.post("/api/crop-doctor/diagnose", upload.single("image"), (req, res) => {
+  try {
+    const cropHint = req.body.crop || (req.file ? req.file.originalname : "Tomato");
+    const fileMetadata = req.file ? {
+      filename: req.file.originalname,
+      size: req.file.size,
+      mimetype: req.file.mimetype
+    } : null;
+
+    const result = diagnoseCropImage(cropHint, fileMetadata);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/crop-doctor/diseases", (req, res) => {
+  try {
+    const diseases = getAllKnownDiseases();
+    res.json({ success: true, diseases });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Mandi Prices (FR-15)
+app.get("/api/market/prices", (req, res) => {
+  try {
+    const prices = getMandiPrices();
+    res.json({ success: true, mandiPrices: prices });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Marketplace (FR-16)
+app.get("/api/marketplace/listings", (req, res) => {
+  try {
+    const listings = getMarketplaceListings();
+    res.json({ success: true, listings });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/marketplace/listings", (req, res) => {
+  try {
+    const listing = createMarketplaceListing(req.body);
+    res.json({ success: true, listing });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post("/api/marketplace/listings/:id/offer", (req, res) => {
+  try {
+    const result = submitBuyerOffer(req.params.id, req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// FPO Module (FR-17)
+app.get("/api/fpo/aggregations", (req, res) => {
+  try {
+    const fpos = getFpoAggregations();
+    res.json({ success: true, aggregations: fpos });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Cold Storage Discovery (FR-18)
+app.get("/api/storage/facilities", (req, res) => {
+  try {
+    const facilities = getColdStorages();
+    res.json({ success: true, coldStorages: facilities });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/storage/book", (req, res) => {
+  try {
+    const { facilityId, crop, quantityBags, durationMonths, farmerContact } = req.body;
+    const storages = getColdStorages();
+    const facility = storages.find(s => s.id === facilityId) || storages[0];
+
+    const booking = {
+      bookingId: "CSB-" + Date.now().toString().slice(-6),
+      facilityName: facility.name,
+      crop: crop || "Tomato",
+      quantityBags: quantityBags || 50,
+      durationMonths: durationMonths || 1,
+      estimatedCost: (quantityBags || 50) * facility.rates.perBagMonth * (durationMonths || 1),
+      status: "CONFIRMED_PENDING_DELIVERY",
+      contactPerson: facility.contactPerson,
+      facilityPhone: facility.phone,
+      farmerContact: farmerContact || "+919876543210",
+      createdAt: new Date().toISOString()
+    };
+
+    res.json({
+      success: true,
+      booking,
+      message: `Reservation confirmed at ${facility.name}. Contact ${facility.phone} upon arrival.`
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Logistics & Freight Support (FR-19)
+app.get("/api/logistics/providers", (req, res) => {
+  try {
+    const vehicles = getLogistics();
+    res.json({ success: true, vehicles });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/logistics/estimate", (req, res) => {
+  try {
+    const { distanceKm = 25, quantityKg = 500, vehicleId } = req.body;
+    const vehicles = getLogistics();
+    const vehicle = vehicles.find(v => v.id === vehicleId) || vehicles[0];
+
+    const dist = parseFloat(distanceKm) || 20;
+    const freightCost = Math.round(vehicle.baseFare + (dist * vehicle.ratePerKm));
+
+    res.json({
+      success: true,
+      estimate: {
+        vehicleType: vehicle.vehicleType,
+        distanceKm: dist,
+        baseFare: vehicle.baseFare,
+        ratePerKm: vehicle.ratePerKm,
+        totalFreight: freightCost,
+        driverName: vehicle.driverName,
+        driverPhone: vehicle.driverPhone,
+        vehicleNumber: vehicle.vehicleNumber,
+        etaMinutes: vehicle.etaMinutes
+      }
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Offline Sync API (FR-20)
+app.post("/api/sync/batch", (req, res) => {
+  try {
+    const { transactions } = req.body;
+    if (!Array.isArray(transactions)) {
+      return res.status(400).json({ error: "transactions must be an array." });
+    }
+    const result = syncBatchTransactions(transactions);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`🌾 FarmNexus API Server running on port ${PORT}`);
+  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+});

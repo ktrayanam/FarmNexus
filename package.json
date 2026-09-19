@@ -1,0 +1,17 @@
+{
+  "name": "farmnexus-workspace",
+  "version": "1.0.0",
+  "description": "FarmNexus - Voice-First AI Platform for Smart Crop Care & Direct Market Access",
+  "private": true,
+  "scripts": {
+    "start": "npm run dev",
+    "dev:backend": "cd backend && node server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "test": "cd backend && node test_suite.js",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
