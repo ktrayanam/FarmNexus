@@ -1,10 +1,37 @@
 # 🌾 FarmNexus — Python AI Platform for Farmers & Direct Agri-Marketplace
 
-> **Hackathon Edition (Version 2.0 — Python Native)**  
+> **Hackathon Edition (Version 2.0 — Full Stack with Vercel CI/CD & Python Support)**  
 > *Voice-First AI Platform for Smart Crop Care & Direct Market Access*  
-> *Built with **Python FastAPI**, **PyMongo**, **MongoDB 7.0**, **Streamlit**, and **React 18**.*
+> *Built with **React 18**, **Node.js Express / Python FastAPI**, **MongoDB 7.0**, and **Vercel Serverless**.*
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fktrayanam%2FFarmNexus&env=MONGODB_URI&envDescription=MongoDB%20Atlas%20Connection%20URI%20(Optional%2C%20defaults%20to%20in-memory%20resilient%20store)&project-name=farmnexus&repo-name=FarmNexus)
 
 ---
+
+## 🚀 1-Click Vercel Deployment
+
+FarmNexus is pre-configured with zero-configuration **Vercel Serverless Architecture** (`vercel.json` + `api/index.js` + GitHub Actions CI/CD):
+
+### Option A: 1-Click Dashboard Import (Recommended)
+1. Click the **[Deploy with Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fktrayanam%2FFarmNexus&env=MONGODB_URI&envDescription=MongoDB%20Atlas%20Connection%20URI%20(Optional%2C%20defaults%20to%20in-memory%20resilient%20store)&project-name=farmnexus&repo-name=FarmNexus)** button above.
+2. Connect your GitHub account and select your repository (`ktrayanam/FarmNexus`).
+3. *(Optional)* Set `MONGODB_URI` environment variable if connecting to MongoDB Atlas (leave empty to use the built-in resilient mock database).
+4. Click **Deploy**! In ~60 seconds, your live production application will be live at `https://<your-project>.vercel.app`.
+
+### Option B: Automated GitHub Actions CI/CD Pipeline
+- Every `git push` to `main` automatically triggers the **`.github/workflows/vercel.yml`** workflow.
+- It validates the 15/15 automated test suite and builds production assets automatically.
+- To enable automatic deployment via GitHub Actions, add `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` to your GitHub Repository Secrets (`Settings > Secrets and variables > Actions`).
+
+### Option C: Vercel CLI
+```bash
+npm install --global vercel
+vercel login
+vercel --prod
+```
+
+---
+
 
 ## 🐍 Python Platform Quick Start
 

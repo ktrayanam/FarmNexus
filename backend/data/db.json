@@ -21,7 +21,7 @@
       "id": "inv-01",
       "crop": "Tomato",
       "variety": "Hybrid US 440",
-      "quantity": 835,
+      "quantity": 990,
       "unit": "kg",
       "unitPrice": 20,
       "harvestDate": "2026-09-15",
@@ -94,6 +94,107 @@
     }
   ],
   "transactions": [
+    {
+      "id": "offline-test-1789829056909",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T14:44:16.910Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]",
+      "syncToken": "token-node-1789829056909"
+    },
+    {
+      "id": "tx-adj-1789829056900",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:44:16.900Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789829056897-kxg4",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:44:16.897Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "offline-test-1789829014319",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 10,
+      "unit": "kg",
+      "unitPrice": 20,
+      "date": "2026-09-19T14:43:34.319Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "OFFLINE_SYNC",
+      "notes": " [Synced Offline]",
+      "syncToken": "token-node-1789829014319"
+    },
+    {
+      "id": "tx-adj-1789829014309",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:43:34.309Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789829014304-fljt",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:43:34.304Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
+    {
+      "id": "tx-adj-1789828952862",
+      "type": "ADJUSTMENT",
+      "crop": "Tomato",
+      "quantity": -5,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:42:32.862Z",
+      "source": "Manual Stock Audit",
+      "recordedVia": "MANUAL",
+      "reason": "Moisture shrinkage / transport bruising",
+      "authorizedBy": "Ramesh Patel"
+    },
+    {
+      "id": "tx-1789828952858-5wky",
+      "type": "STOCK_IN",
+      "crop": "Tomato",
+      "quantity": 50,
+      "unit": "kg",
+      "unitPrice": 22,
+      "date": "2026-09-19T14:42:32.858Z",
+      "source": "Farmer Harvest / Inward Entry",
+      "recordedVia": "MANUAL",
+      "notes": "Stock-in transaction"
+    },
     {
       "id": "offline-test-1",
       "type": "STOCK_IN",
@@ -695,6 +796,93 @@
     }
   ],
   "marketplaceListings": [
+    {
+      "id": "listing-1789829056906",
+      "farmerId": "farmer-01",
+      "farmerName": "Ramesh Patel",
+      "farmerPhone": "+919876543210",
+      "crop": "Paddy",
+      "variety": "BPT Sona Masoori",
+      "quantity": 50,
+      "unit": "bags",
+      "askingPrice": 1900,
+      "currency": "INR",
+      "location": "Guntur Rural, AP",
+      "grade": "Grade A",
+      "harvestDate": "2026-09-19",
+      "status": "ACTIVE",
+      "description": "Farm-fresh quality produce ready for immediate dispatch.",
+      "offers": [
+        {
+          "id": "off-1789829056907",
+          "buyerName": "Kisan Wholesale Trader",
+          "buyerPhone": "+919848012345",
+          "offeredPrice": 1880,
+          "offeredQuantity": 50,
+          "notes": "Ready for immediate pickup.",
+          "status": "PENDING",
+          "date": "2026-09-19T14:44:16.907Z"
+        }
+      ]
+    },
+    {
+      "id": "listing-1789829014315",
+      "farmerId": "farmer-01",
+      "farmerName": "Ramesh Patel",
+      "farmerPhone": "+919876543210",
+      "crop": "Paddy",
+      "variety": "BPT Sona Masoori",
+      "quantity": 50,
+      "unit": "bags",
+      "askingPrice": 1900,
+      "currency": "INR",
+      "location": "Guntur Rural, AP",
+      "grade": "Grade A",
+      "harvestDate": "2026-09-19",
+      "status": "ACTIVE",
+      "description": "Farm-fresh quality produce ready for immediate dispatch.",
+      "offers": [
+        {
+          "id": "off-1789829014316",
+          "buyerName": "Kisan Wholesale Trader",
+          "buyerPhone": "+919848012345",
+          "offeredPrice": 1880,
+          "offeredQuantity": 50,
+          "notes": "Ready for immediate pickup.",
+          "status": "PENDING",
+          "date": "2026-09-19T14:43:34.316Z"
+        }
+      ]
+    },
+    {
+      "id": "listing-1789828952868",
+      "farmerId": "farmer-01",
+      "farmerName": "Ramesh Patel",
+      "farmerPhone": "+919876543210",
+      "crop": "Paddy",
+      "variety": "BPT Sona Masoori",
+      "quantity": 50,
+      "unit": "bags",
+      "askingPrice": 1900,
+      "currency": "INR",
+      "location": "Guntur Rural, AP",
+      "grade": "Grade A",
+      "harvestDate": "2026-09-19",
+      "status": "ACTIVE",
+      "description": "Farm-fresh quality produce ready for immediate dispatch.",
+      "offers": [
+        {
+          "id": "off-1789828952870",
+          "buyerName": "Kisan Wholesale Trader",
+          "buyerPhone": "+919848012345",
+          "offeredPrice": 1880,
+          "offeredQuantity": 50,
+          "notes": "Ready for immediate pickup.",
+          "status": "PENDING",
+          "date": "2026-09-19T14:42:32.870Z"
+        }
+      ]
+    },
     {
       "id": "listing-1789827027851",
       "farmerId": "farmer-01",

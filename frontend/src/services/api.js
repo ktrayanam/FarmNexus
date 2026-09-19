@@ -1,6 +1,9 @@
-const API_BASE = typeof window !== "undefined" && (window.location.port === "3000" || window.location.hostname === "localhost")
-  ? "http://localhost:5050/api"
-  : "/api";
+const API_BASE = (typeof window !== "undefined" && (window.location.hostname.includes("vercel.app") || window.location.hostname !== "localhost"))
+  ? "/api"
+  : typeof window !== "undefined" && window.location.port === "3000"
+    ? "http://localhost:5050/api"
+    : "/api";
+
 
 export async function fetchHealth() {
   const res = await fetch(`${API_BASE}/health`);

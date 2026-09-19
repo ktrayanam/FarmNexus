@@ -12,9 +12,11 @@ import {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DB_FILE = path.join(__dirname, "../data/db.json");
+const DEFAULT_DB_FILE = path.join(__dirname, "../data/db.json");
+const DB_FILE = process.env.VERCEL === "1" ? path.join("/tmp", "farmnexus_db.json") : DEFAULT_DB_FILE;
 
 let state = null;
+
 
 // Asynchronous MongoDB sync helpers (fire-and-forget so UI is ultra-fast)
 async function persistInventoryItem(item) {
@@ -71,6 +73,10 @@ export function getDb() {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, "utf-8");
         state = JSON.parse(raw);
+      } else if (fs.existsSync(DEFAULT_DB_FILE)) {
+        const raw = fs.readFileSync(DEFAULT_DB_FILE, "utf-8");
+        state = JSON.parse(raw);
+        saveDb();
       } else {
         state = JSON.parse(JSON.stringify(initialDb));
         saveDb();
@@ -82,6 +88,7 @@ export function getDb() {
   }
   return state;
 }
+
 
 export function saveDb() {
   try {

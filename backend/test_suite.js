@@ -192,10 +192,11 @@ async function runTests() {
 
   // 15. FR-20: Offline Batch Synchronization with Deduplication
   console.log("15. Testing FR-20: Offline transaction batch synchronization & deduplication...");
+  const uniqueToken = "token-node-" + Date.now();
   const offlineTx = [
     {
-      id: "offline-test-1",
-      syncToken: "token-abc-123",
+      id: "offline-test-" + Date.now(),
+      syncToken: uniqueToken,
       type: "STOCK_IN",
       crop: "Tomato",
       quantity: 10,
@@ -203,6 +204,7 @@ async function runTests() {
       unitPrice: 20
     }
   ];
+
   // First sync
   const sync1 = await fetch(`${BASE_URL}/sync/batch`, {
     method: "POST",
