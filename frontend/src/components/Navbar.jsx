@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Mic, Globe, Bell, Wifi, WifiOff, RefreshCw, UserCheck } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Mic, Globe, Bell, Wifi, WifiOff, RefreshCw, UserCheck, LogOut, Database } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { useStock } from "../context/StockContext";
@@ -7,10 +7,20 @@ import { isOffline, setSimulatedOffline } from "../services/offlineSync";
 
 export default function Navbar({ onOpenVoice, activeTab, setActiveTab }) {
   const { language, setLanguage, t } = useLanguage();
-  const { currentRole, user, switchRole, allRoles } = useAuth();
+  const { currentRole, user, switchRole, logout, allRoles, hasAccess } = useAuth();
   const { alerts, pendingSyncCount, syncNow } = useStock();
   const [offlineState, setOfflineState] = useState(isOffline());
   const [isSyncing, setIsSyncing] = useState(false);
+  const [mongoOnline, setMongoOnline] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/db/status")
+      .then(r => r.json())
+      .then(data => {
+        if (data?.mongo?.connected) setMongoOnline(true);
+      })
+      .catch(() => setMongoOnline(false));
+  }, []);
 
   const toggleOffline = () => {
     const next = !offlineState;
@@ -35,10 +45,10 @@ export default function Navbar({ onOpenVoice, activeTab, setActiveTab }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
         {/* Left: Role switcher & Farmer info */}
         <div className="flex items-center gap-2">
-          <span className="text-xl">{user.avatar}</span>
+          <span className="text-xl">{user?.avatar || "👤"}</span>
           <div>
-            <span className="font-bold text-stone-800">{user.name}</span>
-            <span className="text-stone-500 ml-1.5 hidden sm:inline">({user.location})</span>
+            <span className="font-bold text-stone-800">{user?.name}</span>
+            <span className="text-stone-500 ml-1.5 hidden sm:inline">({user?.location})</span>
           </div>
           <div className="flex items-center gap-1 bg-stone-100 p-0.5 rounded-lg ml-2">
             {Object.keys(allRoles).map((role) => (
@@ -57,8 +67,21 @@ export default function Navbar({ onOpenVoice, activeTab, setActiveTab }) {
           </div>
         </div>
 
-        {/* Right: Offline switch, Language selector, Sync */}
+        {/* Right: MongoDB Badge, Offline switch, Language selector, Logout */}
         <div className="flex items-center gap-2.5">
+          {/* MongoDB Status badge */}
+          <div
+            title="MongoDB Mongoose Connection Status"
+            className={`hidden md:flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+              mongoOnline
+                ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                : "bg-stone-50 border-stone-300 text-stone-700"
+            }`}
+          >
+            <Database size={11} className={mongoOnline ? "text-emerald-600" : "text-stone-500"} />
+            <span>{mongoOnline ? "MongoDB Live" : "MongoDB (Resilient Store)"}</span>
+          </div>
+
           {/* Offline simulator switch */}
           <button
             onClick={toggleOffline}
@@ -98,6 +121,16 @@ export default function Navbar({ onOpenVoice, activeTab, setActiveTab }) {
               <option value="hi">हिन्दी (Hindi)</option>
             </select>
           </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={logout}
+            title="Log out and switch persona"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-red-50 hover:text-red-700 text-stone-600 font-bold transition-all border border-stone-200"
+          >
+            <LogOut size={12} />
+            <span className="hidden sm:inline">Logout</span>
+          </button>
         </div>
       </div>
 
@@ -136,7 +169,7 @@ export default function Navbar({ onOpenVoice, activeTab, setActiveTab }) {
         </div>
       </div>
 
-      {/* Primary Navigation Tabs */}
+      {/* Primary Navigation Tabs (Filtered by Role Permissions - RBAC) */}
       <nav className="max-w-7xl mx-auto px-2 sm:px-6 flex overflow-x-auto no-scrollbar gap-1 border-t border-stone-200/80 py-1.5 bg-stone-50/50">
         {[
           { id: "dashboard", label: t("navDashboard"), icon: "📊" },
@@ -148,26 +181,28 @@ export default function Navbar({ onOpenVoice, activeTab, setActiveTab }) {
           { id: "cold-storage", label: t("navColdStorage"), icon: "❄️" },
           { id: "logistics", label: t("navLogistics"), icon: "🚚" },
           { id: "admin", label: t("navAdmin"), icon: "⚙️" },
-        ].map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
-                isActive
-                  ? "bg-agri-700 text-white shadow-sm"
-                  : "text-stone-600 hover:text-stone-900 hover:bg-stone-200/60"
-              }`}
-            >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
-              {tab.id === "dashboard" && alerts.length > 0 && (
-                <span className={`w-2 h-2 rounded-full ${isActive ? "bg-white" : "bg-red-500"}`}></span>
-              )}
-            </button>
-          );
-        })}
+        ]
+          .filter((tab) => hasAccess(tab.id))
+          .map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
+                  isActive
+                    ? "bg-agri-700 text-white shadow-sm"
+                    : "text-stone-600 hover:text-stone-900 hover:bg-stone-200/60"
+                }`}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+                {tab.id === "dashboard" && alerts.length > 0 && (
+                  <span className={`w-2 h-2 rounded-full ${isActive ? "bg-white" : "bg-red-500"}`}></span>
+                )}
+              </button>
+            );
+          })}
       </nav>
     </header>
   );

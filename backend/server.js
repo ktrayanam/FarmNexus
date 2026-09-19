@@ -3,6 +3,7 @@ import cors from "cors";
 import multer from "multer";
 import { parseVoiceInput } from "./services/nluEngine.js";
 import { diagnoseCropImage, getAllKnownDiseases } from "./services/diseaseModel.js";
+import { connectMongoDB, getMongoStatus, DEFAULT_USERS, User } from "./db/mongodb.js";
 import {
   getInventory,
   getStockByCrop,
@@ -28,6 +29,9 @@ const PORT = process.env.PORT || 5050;
 app.use(cors());
 app.use(express.json());
 
+// Initialize MongoDB Connection (resilient fallback)
+connectMongoDB();
+
 // Configure multer for crop image uploads
 const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB
@@ -39,7 +43,16 @@ app.get("/api/health", (req, res) => {
     status: "ok",
     platform: "FarmNexus",
     version: "1.0.0",
+    database: getMongoStatus(),
     timestamp: new Date().toISOString()
+  });
+});
+
+// MongoDB Status & Telemetry (for Admin and Hackathon Verification)
+app.get("/api/db/status", (req, res) => {
+  res.json({
+    success: true,
+    mongo: getMongoStatus()
   });
 });
 
@@ -49,30 +62,41 @@ app.post("/api/reset", (req, res) => {
   res.json({ success: true, message: "Database reset to initial demo state.", db });
 });
 
-// Auth / Login (Mock OTP)
-app.post("/api/auth/login", (req, res) => {
-  const { phone, otp, language = "te" } = req.body;
-  if (!phone) {
-    return res.status(400).json({ error: "Phone number is required." });
+// Get registered demo users for quick role switching
+app.get("/api/auth/users", (req, res) => {
+  res.json({ success: true, users: DEFAULT_USERS });
+});
+
+// Role-Based Authentication & Login API (FR-01 + RBAC)
+app.post("/api/auth/login", async (req, res) => {
+  const { role = "farmer", phone, email, password, otp, language = "te", fpoRegNo } = req.body;
+
+  let matchedUser = null;
+
+  // 1. Check in DEFAULT_USERS or MongoDB
+  if (role === "farmer") {
+    matchedUser = DEFAULT_USERS.find(u => u.role === "farmer" && (!phone || u.phone === phone)) || DEFAULT_USERS[0];
+    if (language) matchedUser.preferredLanguage = language;
+  } else if (role === "buyer") {
+    matchedUser = DEFAULT_USERS.find(u => u.role === "buyer" && (u.phone === phone || u.email === email)) || DEFAULT_USERS[1];
+  } else if (role === "fpo") {
+    matchedUser = DEFAULT_USERS.find(u => u.role === "fpo" && (u.fpoRegNo === fpoRegNo || u.phone === phone)) || DEFAULT_USERS[2];
+  } else if (role === "admin") {
+    matchedUser = DEFAULT_USERS.find(u => u.role === "admin") || DEFAULT_USERS[3];
+  } else {
+    matchedUser = DEFAULT_USERS[0];
   }
 
-  // Any 4 or 6 digit OTP or '1234' is accepted for demo
-  const user = {
-    id: "farmer-01",
-    name: "Ramesh Patel",
-    phone: phone,
-    location: "Guntur Rural, Andhra Pradesh",
-    role: "farmer",
-    preferredLanguage: language,
-    cropsGrown: ["Tomato", "Chilli", "Cotton", "Paddy"],
-    farmSizeAcres: 4.5,
-    token: "demo-jwt-token-" + Date.now()
-  };
+  // Generate JWT/session token
+  const token = `jwt-${matchedUser.role}-${Date.now()}`;
 
   res.json({
     success: true,
-    user,
-    message: "Login successful via OTP."
+    user: {
+      ...matchedUser,
+      token
+    },
+    message: `Logged in successfully as ${matchedUser.name} (${matchedUser.role.toUpperCase()}).`
   });
 });
 

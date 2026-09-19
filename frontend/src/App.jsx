@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import OfflineBanner from "./components/OfflineBanner";
 import VoiceAssistantModal from "./components/VoiceAssistantModal";
@@ -12,16 +12,31 @@ import FPOModule from "./components/FPOModule";
 import ColdStorageDiscovery from "./components/ColdStorageDiscovery";
 import LogisticsSupport from "./components/LogisticsSupport";
 import AdminPanel from "./components/AdminPanel";
+import LoginPage from "./components/LoginPage";
 import { useStock } from "./context/StockContext";
+import { useAuth } from "./context/AuthContext";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const { isAuthenticated, currentRole, allowedTabs, defaultTab } = useAuth();
+  const [activeTab, setActiveTab] = useState(defaultTab || "dashboard");
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   const [confirmingTx, setConfirmingTx] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   const [marketplacePreFilter, setMarketplacePreFilter] = useState("ALL");
 
+  // Keep active tab valid whenever role changes
+  useEffect(() => {
+    if (allowedTabs && !allowedTabs.includes(activeTab)) {
+      setActiveTab(defaultTab || allowedTabs[0] || "dashboard");
+    }
+  }, [currentRole, allowedTabs, defaultTab, activeTab]);
+
   const { stockIn, stockOut } = useStock();
+
+  // If not logged in, show dedicated multi-role login page
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
 
   const showToast = (msg) => {
     setToastMessage(msg);
