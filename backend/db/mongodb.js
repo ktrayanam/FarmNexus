@@ -71,13 +71,26 @@ const DEFAULT_USERS = [
   }
 ];
 
+export function isMongoConnected() {
+  return isConnected;
+}
+
 export async function connectMongoDB() {
+  // If running on Vercel and no cloud MONGODB_URI is provided, skip local mongo connect
+  if (process.env.VERCEL === "1" && !process.env.MONGODB_URI) {
+    isConnected = false;
+    connectionError = "Running on Vercel without MONGODB_URI. Resilient in-memory store active.";
+    console.log("☁️ Vercel Serverless environment detected: Using resilient in-memory agricultural store.");
+    return false;
+  }
+
   const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/farmnexus";
 
   try {
     mongoose.set("strictQuery", false);
+    mongoose.set("bufferCommands", false); // Do NOT buffer commands when offline or disconnected
     await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 2500 // Quick timeout if not running locally
+      serverSelectionTimeoutMS: 2000 // Quick timeout if not running locally
     });
 
     isConnected = true;

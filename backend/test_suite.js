@@ -1,9 +1,23 @@
 // Comprehensive Functional & Verification Test Suite for FarmNexus
 import assert from "assert";
+import app from "./server.js";
 
 const BASE_URL = "http://127.0.0.1:5050/api";
+let activeServer = null;
+
+async function ensureServerRunning() {
+  try {
+    const r = await fetch(`${BASE_URL}/health`, { signal: AbortSignal.timeout(500) });
+    if (r.ok) return;
+  } catch (e) {
+    // Start in-process server on 5050
+    activeServer = app.listen(5050);
+    await new Promise(resolve => setTimeout(resolve, 800));
+  }
+}
 
 async function runTests() {
+  await ensureServerRunning();
   console.log("🧪 Starting FarmNexus Comprehensive Verification Test Suite...\n");
 
   // 1. Health check
@@ -335,10 +349,13 @@ async function runTests() {
   console.log(`   ✅ Direct consumer deal ${acceptRes.deal.dealId} sealed & digital contract generated!`);
 
   console.log("\n🎉 ALL 20 AUTOMATED END-TO-END TESTS PASSED SUCCESSFULLY! 💯");
+  if (activeServer) activeServer.close();
+  process.exit(0);
 }
 
 runTests().catch(err => {
   console.error("❌ Test suite failed:", err);
+  if (activeServer) activeServer.close();
   process.exit(1);
 });
 

@@ -7,27 +7,31 @@ import {
   Transaction,
   MarketplaceListing,
   ColdStorage,
-  Logistics
+  Logistics,
+  isMongoConnected
 } from "../db/mongodb.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DEFAULT_DB_FILE = path.join(__dirname, "../data/db.json");
-const DB_FILE = process.env.VERCEL === "1" ? path.join("/tmp", "farmnexus_db.json") : DEFAULT_DB_FILE;
+const DB_FILE = (process.env.VERCEL === "1" || process.env.AWS_LAMBDA_FUNCTION_NAME) 
+  ? path.join("/tmp", "farmnexus_db.json") 
+  : DEFAULT_DB_FILE;
 
 let state = null;
 
-
 // Asynchronous MongoDB sync helpers (fire-and-forget so UI is ultra-fast)
 async function persistInventoryItem(item) {
+  if (!isMongoConnected()) return;
   try {
-    await Inventory.findOneAndUpdate({ crop: item.crop }, item, { upsert: true, new: true });
+    await Inventory.findOneAndUpdate({ crop: item.crop }, item, { upsert: true, returnDocument: 'after' });
   } catch (e) {
     // Non-blocking fallback
   }
 }
 
 async function persistTransaction(tx) {
+  if (!isMongoConnected()) return;
   try {
     await Transaction.create(tx);
   } catch (e) {
@@ -36,8 +40,9 @@ async function persistTransaction(tx) {
 }
 
 async function persistListing(listing) {
+  if (!isMongoConnected()) return;
   try {
-    await MarketplaceListing.findOneAndUpdate({ id: listing.id }, listing, { upsert: true, new: true });
+    await MarketplaceListing.findOneAndUpdate({ id: listing.id }, listing, { upsert: true, returnDocument: 'after' });
   } catch (e) {
     // Non-blocking fallback
   }

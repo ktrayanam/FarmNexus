@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import multer from "multer";
+import { fileURLToPath } from "url";
 import { parseVoiceInput } from "./services/nluEngine.js";
 import { diagnoseCropImage, getAllKnownDiseases } from "./services/diseaseModel.js";
 import { connectMongoDB, getMongoStatus, DEFAULT_USERS, User } from "./db/mongodb.js";
@@ -527,8 +528,13 @@ app.post("/api/sync/batch", (req, res) => {
   }
 });
 
-// Start Server (only if not running as serverless function on Vercel)
-if (process.env.VERCEL !== "1") {
+// Start Server (only if executed directly, not when imported by Vercel serverless functions)
+const isDirectEntry = process.argv[1] && (
+  process.argv[1] === fileURLToPath(import.meta.url) || 
+  process.argv[1].endsWith("server.js")
+);
+
+if (isDirectEntry && process.env.VERCEL !== "1") {
   app.listen(PORT, () => {
     console.log(`🌾 FarmNexus API Server running on port ${PORT}`);
     console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);

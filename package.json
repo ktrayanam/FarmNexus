@@ -2,6 +2,7 @@
   "name": "farmnexus-workspace",
   "version": "2.0.0",
   "description": "FarmNexus - Python AI Platform for Smart Crop Care & Direct Market Access",
+  "type": "module",
   "private": true,
   "scripts": {
     "start": "npm run dev",

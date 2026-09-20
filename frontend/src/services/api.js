@@ -1,237 +1,296 @@
+// FarmNexus Unified API Service
+// Built with Resilient Hybrid Architecture:
+// 1. Attempts live backend API (Express Node.js / FastAPI Python on Vercel or localhost)
+// 2. Seamlessly falls back to ClientMockStore if running as a static deployment (e.g. GitHub Pages) or offline
+
+import {
+  clientGetInventory,
+  clientStockIn,
+  clientStockOut,
+  clientStockAdjust,
+  clientGetTransactions,
+  clientGetAlerts,
+  clientGetMandiPrices,
+  clientUpdateMandiPrice,
+  clientGetMarketplace,
+  clientCreateListing,
+  clientSubmitOffer,
+  clientAcceptListing,
+  clientGetFpoAggregations,
+  clientCreateFpoLot,
+  clientAddFpoContribution,
+  clientUpdateFpoTender,
+  clientGetColdStorages,
+  clientGetColdStorageBookings,
+  clientBookColdStorage,
+  clientCancelColdStorageBooking,
+  clientGetLogisticsProviders,
+  clientGetLogisticsTrips,
+  clientEstimateFreight,
+  clientBookLogistics,
+  clientUpdateLogisticsTrip,
+  clientDiagnoseCrop,
+  clientParseVoice,
+  clientReset
+} from "./clientMockStore";
+
 const API_BASE = (typeof window !== "undefined" && (window.location.hostname.includes("vercel.app") || window.location.hostname !== "localhost"))
   ? "/api"
   : typeof window !== "undefined" && window.location.port === "3000"
     ? "http://localhost:5050/api"
     : "/api";
 
+// Resilient API Caller with automatic client-side fallback
+async function callApi(endpoint, options = {}, fallbackFn = () => ({ success: true })) {
+  try {
+    let signal = options.signal;
+    if (!signal && typeof AbortSignal !== "undefined" && AbortSignal.timeout) {
+      signal = AbortSignal.timeout(2800); // 2.8s fast timeout for instant UI response
+    }
 
-export async function fetchHealth() {
-  const res = await fetch(`${API_BASE}/health`);
-  return res.json();
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      signal
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    }
+  } catch (err) {
+    // Expected on static deployments (GitHub Pages) or when backend is unreachable
+    console.debug(`[FarmNexus API] ${endpoint} falling back to resilient client store:`, err.message);
+  }
+
+  // Execute client-side fallback
+  try {
+    return fallbackFn();
+  } catch (fallbackErr) {
+    console.error("Client fallback error:", fallbackErr);
+    throw fallbackErr;
+  }
 }
 
+// 1. HEALTH & TELEMETRY
+export async function fetchHealth() {
+  return callApi("/health", {}, () => ({
+    status: "ok",
+    platform: "FarmNexus Resilient Client Edition",
+    timestamp: new Date().toISOString()
+  }));
+}
+
+// 2. INVENTORY & TRANSACTIONS
 export async function fetchInventory() {
-  const res = await fetch(`${API_BASE}/inventory`);
-  return res.json();
+  return callApi("/inventory", {}, () => clientGetInventory());
 }
 
 export async function apiStockIn(data) {
-  const res = await fetch(`${API_BASE}/inventory/stock-in`, {
+  return callApi("/inventory/stock-in", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || "Failed to add stock");
-  return json;
+  }, () => clientStockIn(data));
 }
 
 export async function apiStockOut(data) {
-  const res = await fetch(`${API_BASE}/inventory/stock-out`, {
+  return callApi("/inventory/stock-out", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || "Failed to withdraw stock");
-  return json;
+  }, () => clientStockOut(data));
 }
 
 export async function apiStockAdjustment(data) {
-  const res = await fetch(`${API_BASE}/inventory/adjust`, {
+  return callApi("/inventory/adjust", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || "Failed to adjust stock");
-  return json;
+  }, () => clientStockAdjust(data));
 }
 
 export async function fetchTransactions() {
-  const res = await fetch(`${API_BASE}/inventory/transactions`);
-  return res.json();
+  return callApi("/inventory/transactions", {}, () => clientGetTransactions());
 }
 
 export async function fetchAlerts() {
-  const res = await fetch(`${API_BASE}/alerts`);
-  return res.json();
+  return callApi("/alerts", {}, () => clientGetAlerts());
 }
 
+// 3. VOICE NLU
 export async function parseVoiceSpeech(text, preferredLanguage = "en") {
-  const res = await fetch(`${API_BASE}/voice/nlu`, {
+  return callApi("/voice/nlu", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text, preferredLanguage })
-  });
-  return res.json();
+  }, () => clientParseVoice(text, preferredLanguage));
 }
 
+// 4. AI CROP DOCTOR
 export async function diagnoseCrop(formData) {
-  const res = await fetch(`${API_BASE}/crop-doctor/diagnose`, {
+  let cropHint = "Tomato";
+  if (formData instanceof FormData) {
+    cropHint = formData.get("crop") || "Tomato";
+  }
+  return callApi("/crop-doctor/diagnose", {
     method: "POST",
     body: formData
-  });
-  return res.json();
+  }, () => clientDiagnoseCrop(cropHint));
 }
 
 export async function fetchKnownDiseases() {
-  const res = await fetch(`${API_BASE}/crop-doctor/diseases`);
-  return res.json();
+  return callApi("/crop-doctor/diseases", {}, () => ({
+    success: true,
+    diseases: [
+      { crop: "Tomato", diseaseName: "Late Blight" },
+      { crop: "Chilli", diseaseName: "Leaf Curl Virus" }
+    ]
+  }));
 }
 
+// 5. MANDI INTELLIGENCE
 export async function fetchMandiPrices() {
-  const res = await fetch(`${API_BASE}/market/prices`);
-  return res.json();
-}
-
-export async function fetchMarketplace() {
-  const res = await fetch(`${API_BASE}/marketplace/listings`);
-  return res.json();
-}
-
-export async function apiCreateListing(data) {
-  const res = await fetch(`${API_BASE}/marketplace/listings`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  return res.json();
-}
-
-export async function apiSubmitOffer(listingId, offer) {
-  const res = await fetch(`${API_BASE}/marketplace/listings/${listingId}/offer`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(offer)
-  });
-  return res.json();
-}
-
-export async function apiAcceptMarketplaceRequest(listingId, dealData) {
-  const res = await fetch(`${API_BASE}/marketplace/listings/${listingId}/accept`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(dealData || {})
-  });
-  return res.json();
-}
-
-export async function fetchFPOAggregations() {
-  const res = await fetch(`${API_BASE}/fpo/aggregations`);
-  return res.json();
-}
-
-export async function apiCreateFpoLot(lotData) {
-  const res = await fetch(`${API_BASE}/fpo/aggregations`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(lotData)
-  });
-  return res.json();
-}
-
-export async function apiAddFpoContribution(lotId, contributionData) {
-  const res = await fetch(`${API_BASE}/fpo/aggregations/${lotId}/contribute`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(contributionData)
-  });
-  return res.json();
-}
-
-export async function apiUpdateFpoTender(lotId, tenderData) {
-  const res = await fetch(`${API_BASE}/fpo/aggregations/${lotId}/tender`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(tenderData)
-  });
-  return res.json();
-}
-
-export async function fetchColdStorages() {
-  const res = await fetch(`${API_BASE}/storage/facilities`);
-  return res.json();
-}
-
-export async function fetchColdStorageBookings() {
-  const res = await fetch(`${API_BASE}/storage/bookings`);
-  return res.json();
-}
-
-export async function apiBookColdStorage(data) {
-  const res = await fetch(`${API_BASE}/storage/book`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  return res.json();
-}
-
-export async function apiCancelColdStorageBooking(bookingId) {
-  const res = await fetch(`${API_BASE}/storage/bookings/${bookingId}`, {
-    method: "DELETE"
-  });
-  return res.json();
-}
-
-export async function fetchLogisticsProviders() {
-  const res = await fetch(`${API_BASE}/logistics/providers`);
-  return res.json();
-}
-
-export async function fetchLogisticsBookings() {
-  const res = await fetch(`${API_BASE}/logistics/trips`);
-  return res.json();
-}
-
-export async function apiBookLogisticsTrip(data) {
-  const res = await fetch(`${API_BASE}/logistics/book`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  return res.json();
-}
-
-export async function apiUpdateLogisticsTrip(bookingRef, status) {
-  const res = await fetch(`${API_BASE}/logistics/trips/${bookingRef}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status })
-  });
-  return res.json();
-}
-
-export async function apiEstimateLogistics(data) {
-  const res = await fetch(`${API_BASE}/logistics/estimate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  return res.json();
+  return callApi("/market/prices", {}, () => clientGetMandiPrices());
 }
 
 export async function apiUpdateMandiPrice(data) {
-  const res = await fetch(`${API_BASE}/market/prices`, {
+  return callApi("/market/prices", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  });
-  return res.json();
+  }, () => clientUpdateMandiPrice(data.market, data.crop, data.modalPrice, data.trend));
 }
 
+// 6. DIRECT MARKETPLACE
+export async function fetchMarketplace() {
+  return callApi("/marketplace/listings", {}, () => clientGetMarketplace());
+}
+
+export async function apiCreateListing(data) {
+  return callApi("/marketplace/listings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  }, () => clientCreateListing(data));
+}
+
+export async function apiSubmitOffer(listingId, offer) {
+  return callApi(`/marketplace/listings/${listingId}/offer`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(offer)
+  }, () => clientSubmitOffer(listingId, offer));
+}
+
+export async function apiAcceptMarketplaceRequest(listingId, dealData) {
+  return callApi(`/marketplace/listings/${listingId}/accept`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dealData || {})
+  }, () => clientAcceptListing(listingId, dealData));
+}
+
+// 7. FPO MODULE
+export async function fetchFPOAggregations() {
+  return callApi("/fpo/aggregations", {}, () => clientGetFpoAggregations());
+}
+
+export async function apiCreateFpoLot(lotData) {
+  return callApi("/fpo/aggregations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(lotData)
+  }, () => clientCreateFpoLot(lotData));
+}
+
+export async function apiAddFpoContribution(lotId, contributionData) {
+  return callApi(`/fpo/aggregations/${lotId}/contribute`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(contributionData)
+  }, () => clientAddFpoContribution(lotId, contributionData));
+}
+
+export async function apiUpdateFpoTender(lotId, tenderData) {
+  return callApi(`/fpo/aggregations/${lotId}/tender`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(tenderData)
+  }, () => clientUpdateFpoTender(lotId, tenderData));
+}
+
+// 8. COLD STORAGE DISCOVERY
+export async function fetchColdStorages() {
+  return callApi("/storage/facilities", {}, () => clientGetColdStorages());
+}
+
+export async function fetchColdStorageBookings() {
+  return callApi("/storage/bookings", {}, () => clientGetColdStorageBookings());
+}
+
+export async function apiBookColdStorage(data) {
+  return callApi("/storage/book", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  }, () => clientBookColdStorage(data));
+}
+
+export async function apiCancelColdStorageBooking(bookingId) {
+  return callApi(`/storage/bookings/${bookingId}`, {
+    method: "DELETE"
+  }, () => clientCancelColdStorageBooking(bookingId));
+}
+
+// 9. LOGISTICS SUPPORT
+export async function fetchLogisticsProviders() {
+  return callApi("/logistics/providers", {}, () => clientGetLogisticsProviders());
+}
+
+export async function fetchLogisticsBookings() {
+  return callApi("/logistics/trips", {}, () => clientGetLogisticsTrips());
+}
+
+export async function apiBookLogisticsTrip(data) {
+  return callApi("/logistics/book", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  }, () => clientBookLogistics(data));
+}
+
+export async function apiUpdateLogisticsTrip(bookingRef, status) {
+  return callApi(`/logistics/trips/${bookingRef}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
+  }, () => clientUpdateLogisticsTrip(bookingRef, status));
+}
+
+export async function apiEstimateLogistics(data) {
+  return callApi("/logistics/estimate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  }, () => clientEstimateFreight(data.distanceKm, data.quantityKg));
+}
+
+// 10. OFFLINE SYNC & RESET
 export async function apiSyncOfflineBatch(transactions) {
-  const res = await fetch(`${API_BASE}/sync/batch`, {
+  return callApi("/sync/batch", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ transactions })
-  });
-  return res.json();
+  }, () => ({
+    success: true,
+    processed: transactions.length,
+    duplicatesSkipped: 0
+  }));
 }
 
 export async function apiResetDb() {
-  const res = await fetch(`${API_BASE}/reset`, { method: "POST" });
-  return res.json();
+  return callApi("/reset", { method: "POST" }, () => {
+    clientReset();
+    return { success: true, message: "Client database reset successfully." };
+  });
 }
-
