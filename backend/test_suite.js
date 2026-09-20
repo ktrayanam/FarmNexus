@@ -7,13 +7,25 @@ let activeServer = null;
 
 async function ensureServerRunning() {
   try {
-    const r = await fetch(`${BASE_URL}/health`, { signal: AbortSignal.timeout(500) });
+    const r = await fetch(`${BASE_URL}/health`, { signal: AbortSignal.timeout(600) });
     if (r.ok) return;
   } catch (e) {
-    // Start in-process server on 5050
-    activeServer = app.listen(5050);
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // Port not responding, proceed to bind
   }
+
+  return new Promise((resolve) => {
+    activeServer = app.listen(5050, "127.0.0.1", () => {
+      resolve();
+    });
+    activeServer.on("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        resolve();
+      } else {
+        console.warn("Server listen notice:", err.message);
+        resolve();
+      }
+    });
+  });
 }
 
 async function runTests() {

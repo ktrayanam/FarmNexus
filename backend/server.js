@@ -43,6 +43,24 @@ const PORT = process.env.PORT || 5050;
 app.use(cors());
 app.use(express.json());
 
+// Universal Route Normalizer for Vercel Serverless
+app.use((req, res, next) => {
+  if (!req.url.startsWith("/api") && !req.url.startsWith("/index.html") && req.url !== "/") {
+    req.url = "/api" + req.url;
+  }
+  next();
+});
+
+// Root Health & Welcome
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    platform: "FarmNexus Platform API",
+    version: "2.0.0",
+    docs: "/api/health"
+  });
+});
+
 // Initialize MongoDB Connection (resilient fallback)
 connectMongoDB().then(async (connected) => {
   if (connected) {

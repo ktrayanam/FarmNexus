@@ -14,6 +14,11 @@ jobs:
   verify:
     name: 🧪 Run Verification & Automated Tests
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -30,13 +35,14 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
 
-      - name: Install All Dependencies
+      - name: Install Node Dependencies
         run: |
           npm install
           cd backend && npm install
           cd ../frontend && npm install
-          cd ..
-          pip install -r requirements.txt
+
+      - name: Install Python Dependencies
+        run: pip install -r requirements.txt
 
       - name: Run Node.js Test Suite (20/20 Verification)
         run: npm test
